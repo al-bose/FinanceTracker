@@ -48,7 +48,17 @@
             <!-- Profile dropdown -->
             <div class="relative ml-3">
               <div>
-                <a href="/login" class="text-gray-300 hover:bg-gray-700 hover:text-white">Log in <span aria-hidden="true">&rarr;</span></a>
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Log Out</button>
+                </form> 
+                {% else %}
+                <form method="get" action="{% url 'login' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Log In</button>
+                </form>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -69,8 +79,13 @@
       <div class="">
         <div class="">
           <div class="text-center">
+            {% if user.is_authenticated %}
+            <h1 class="text-gray-300 text-4xl font-bold tracking-tight sm:text-6xl">Hello, </h1>
+            <p class="text-gray-300 mt-6 text-lg leading-8">{{user.username}}</p>
+            {% else %}
             <h1 class="text-gray-300 text-4xl font-bold tracking-tight sm:text-6xl">Manage Your Finances</h1>
             <p class="text-gray-300 mt-6 text-lg leading-8">Personalized apps for tracking expenditure, budgeting and portfolio health.</p>
+            {% endif %}
           </div>
         </div>
       </div>

@@ -38,8 +38,8 @@
               <div class="flex space-x-4">
                 <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
                 <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Home</a>
-                <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Budgeting</a>
+                <a href="{% url 'home:main' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Home</a>
+                <a href="{% url 'budget:main' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Budgeting</a>
                 <a href="{% url 'portfolio:main' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Portfolio</a>
               </div>
             </div>
@@ -69,8 +69,8 @@
       <div class="hidden" id="mobile-menu">
         <div class="space-y-1 px-2 pb-3 pt-2">
           <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-          <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Home</a>
-          <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Budgeting</a>
+          <a href="{% url 'home:main' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Home</a>
+          <a href="{% url 'budget:main' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Budgeting</a>
           <a href="{% url 'portfolio:main' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Portfolio</a>
         </div>
       </div>
@@ -81,3 +81,13 @@
   
 </body>
 </html>
+
+<script>
+function toggleMobileMenu()
+{
+  document.getElementById("mobile-menu").classList.toggle("hidden");
+  document.getElementById("mobile-menu-closed").classList.toggle("hidden");
+  document.getElementById("mobile-menu-opened").classList.toggle("hidden");
+
+}
+</script>

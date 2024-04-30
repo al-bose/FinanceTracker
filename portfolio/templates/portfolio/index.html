@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
+    <div>
+        <form method="get" action="{% url 'portfolio:createposition' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md p-2 mt-6 font-medium">Add Position</button>
+        </form>
+    </div>
+    {% if stocks %}
+    <div class="grid grid-cols-2 gap-10 bg-ibb-light-black">
+        <div>
+            <ul role="list" class="divide-y divide-ibb-white">
+                {% for stock in stocks %}
+                <li class="justify-between gap-x-6 py-5">
+                    <div class="gap-x-4 p-2 hover: border-2 border-0 rounded-lg hover: cursor-pointer">
+                        <div class="min-w-0">
+                        <p class="font-bold leading-7 text-gray-400">{{stock.ticker}}</p>
+                        <p class="text-sm leading-6 text-gray-400">{{stock.quantity}}</p>
+                        <p class="text-sm leading-6 text-gray-400">{{stock.cost_basis}}</p>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Total Porfolio Value</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="flex flex-col items-center mt-6">
+        <span class="text-sm text-gray-400 font-medium">No Positions Found...</span>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+

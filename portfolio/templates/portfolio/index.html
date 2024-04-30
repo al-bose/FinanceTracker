@@ -1,4 +1,6 @@
+
 {% extends "base.html" %}
+{% load custom_filters %}
 {% block content %}
 
 <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
@@ -25,9 +27,17 @@
                             <div class="font-bold leading-6 text-gray-400">
                                 ${{stock.cost_basis}}/ea
                             </div>
-                            <div class="font-bold leading-6 text-gray-400">
-                                value (% increase)
+
+                            {% if total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change" > 0 %}
+                            <div class="font-bold leading-6 text-green-400">
+                                +{{total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change"}}%
                             </div>
+                            {% else %}
+                            <div class="font-bold leading-6 text-red-600">
+                                -{{total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change"}}%
+                            </div>
+                            {% endif %}
+
                         </div>
                     </div>
                 </li>
@@ -35,7 +45,13 @@
             </ul>
         </div>
         <div>
-            <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Total Porfolio Value</p>
+            <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Value : ${{total_prices|get_item:"current_value"}}</p>
+            <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Cost : ${{total_prices|get_item:"total_cost"}}</p>
+            {% if total_prices|get_item:"percentage_change" > 0%}
+                <p class="mt-2 text-3xl font-bold text-green-400 sm:text-4xl snap-center">Portfolio Growth : +{{total_prices|get_item:"percentage_change"}}%</p>
+            {% else %}
+            <p class="mt-2 text-3xl font-bold text-red-600 sm:text-4xl snap-center">Portfolio Growth : -{{total_prices|get_item:"percentage_change"}}%</p>
+            {% endif %}
         </div>
     </div>
     {% else %}
@@ -43,6 +59,7 @@
         <span class="text-sm text-gray-400 font-medium">No Positions Found...</span>
     </div>
     {% endif %}
+
 </div>
 
 {% endblock %}

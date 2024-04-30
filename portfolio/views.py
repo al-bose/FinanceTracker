@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Positions
@@ -10,6 +10,7 @@ import datetime
 from timedelta import Timedelta
 import math
 from decimal import Decimal
+from django.urls import reverse
 
 # Create your views here.
 
@@ -70,16 +71,16 @@ def main(request):
         total_ticker_prices[stock.ticker] = {
             "current_value": round(current_value,2),
             "total_cost": round(total_cost,2),
-            "percentage_change": percentage_change
+            "percentage_change": round(percentage_change, 2)
         }
 
         total_prices["current_value"] += current_value
         total_prices["total_cost"] += total_cost
 
-        stock.cost_basis = round(stock.cost_basis)
+        stock.cost_basis = round(stock.cost_basis, 2)
 
         
-    total_prices["percentage_change"] = round(total_prices["current_value"] - total_prices["total_cost"])/total_prices["total_cost"] * 100
+    total_prices["percentage_change"] = round((total_prices["current_value"] - total_prices["total_cost"])/total_prices["total_cost"] * 100,2)
     total_prices["current_value"] = round(total_prices["current_value"],2)
     total_prices["total_cost"] = round(total_prices["total_cost"],2)
     context = {"stocks" : stocks, "total_ticker_prices": total_ticker_prices, "total_prices": total_prices}
@@ -88,10 +89,20 @@ def main(request):
 @login_required
 def createPosition(request):
     if request.method == "POST":
-        position = Positions(purchased_date= request.POST["date"], ticker= request.POST["ticker"], quantity= request.POST["quantity"], cost_basis= request.POST["costBasis"])
-        position.user = request.user
-        position.save()
-        return main(request)
+
+        existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["ticker"])
+
+        if existing_position_query:
+            existing_position = existing_position_query.first()
+            existing_position.cost_basis = ((existing_position.quantity * existing_position.cost_basis) + (Decimal(request.POST["quantity"]) * Decimal(request.POST["costBasis"])))/(existing_position.quantity + Decimal(request.POST["quantity"]))
+            existing_position.quantity += Decimal(request.POST["quantity"])
+            existing_position.save()
+        else:
+            position = Positions(purchased_date= request.POST["date"], ticker= request.POST["ticker"], quantity= request.POST["quantity"], cost_basis= request.POST["costBasis"])
+            position.user = request.user
+            position.save()
+
+        return HttpResponseRedirect(reverse("portfolio:main"))
     else:
         env = environ.Env()
         environ.Env.read_env()   

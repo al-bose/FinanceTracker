@@ -110,5 +110,27 @@ def createPosition(request):
             "api_key" : env("API_KEY")
         }
         return render(request, "portfolio/createposition.html", context)
+    
+@login_required
+def updatePosition(request):
+
+    existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["ticker"])
+    print(request)
+    if existing_position_query:
+        existing_position = existing_position_query.first()
+        existing_position.cost_basis = Decimal(request.POST["costBasis"])
+        existing_position.quantity = Decimal(request.POST["quantity"])
+        existing_position.save()
+
+    return HttpResponseRedirect(reverse("portfolio:main")) 
+
+@login_required
+def deletePosition(request):
+    existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["deleteTicker"])
+    print(request)
+    if existing_position_query:
+        existing_position = existing_position_query.first()
+        existing_position.delete()
+    return HttpResponseRedirect(reverse("portfolio:main")) 
 
 

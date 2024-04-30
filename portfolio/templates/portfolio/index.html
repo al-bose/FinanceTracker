@@ -16,18 +16,14 @@
             <ul role="list" class="divide-y">
                 {% for stock in stocks %}
                 <li class="justify-between gap-x-6 py-5">
-                    <div class="gap-x-4 p-2 hover:border-2 border-0 border-white rounded-lg hover:cursor-pointer ">
-                        <div class="min-w-0 grid sm:grid-cols-4">
+                    <div class="gap-x-4 p-2 hover:border-2 border-0 border-white rounded-lg hover:cursor-pointer " onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}')">
+                        <div class="min-w-0 grid sm:grid-cols-3">
                             <div class="font-bold leading-6 text-gray-400">
                                 {{stock.ticker}}
                             </div>
-                            <div class="font-bold leading-6 text-gray-400">
-                                {{stock.quantity}} shares
+                            <div class="font-bold leading-4 text-gray-400">
+                                {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
                             </div>
-                            <div class="font-bold leading-6 text-gray-400">
-                                ${{stock.cost_basis}}/ea
-                            </div>
-
                             {% if total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change" > 0 %}
                             <div class="font-bold leading-6 text-green-400">
                                 +{{total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change"}}%
@@ -45,13 +41,53 @@
             </ul>
         </div>
         <div>
-            <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Value : ${{total_prices|get_item:"current_value"}}</p>
-            <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Cost : ${{total_prices|get_item:"total_cost"}}</p>
-            {% if total_prices|get_item:"percentage_change" > 0%}
-                <p class="mt-2 text-3xl font-bold text-green-400 sm:text-4xl snap-center">Portfolio Growth : +{{total_prices|get_item:"percentage_change"}}%</p>
-            {% else %}
-            <p class="mt-2 text-3xl font-bold text-red-600 sm:text-4xl snap-center">Portfolio Growth : -{{total_prices|get_item:"percentage_change"}}%</p>
-            {% endif %}
+            <div class="grid grid-rows-2 gap-10">
+                <div>
+                    <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Value : ${{total_prices|get_item:"current_value"}}</p>
+                    <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Cost : ${{total_prices|get_item:"total_cost"}}</p>
+                    {% if total_prices|get_item:"percentage_change" > 0%}
+                        <p class="mt-2 text-3xl font-bold text-green-400 sm:text-4xl snap-center">Portfolio Growth : +{{total_prices|get_item:"percentage_change"}}%</p>
+                    {% else %}
+                    <p class="mt-2 text-3xl font-bold text-red-600 sm:text-4xl snap-center">Portfolio Growth : -{{total_prices|get_item:"percentage_change"}}%</p>
+                    {% endif %}
+                </div>
+                <div id="selectedStock" class="hidden">
+                    <form class="space-y-6" method="post" action="{% url 'portfolio:updateposition' %}">
+                        {% csrf_token %}
+                        <div>
+                            <label for="ticker" class="block text-sm font-medium leading-6 text-gray-300">Ticker</label>
+                            <div class="mt-2 relative">
+                              <input id="ticker" name="ticker" type="text" readonly="readonly" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                          </div>
+                        </div>
+                
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium leading-6 text-gray-300">Quantity</label>
+                            <div class="mt-2">
+                                <input id="quantity" name="quantity" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                
+                        <div>
+                            <label for="costBasis" class="block text-sm font-medium leading-6 text-gray-300">Cost Basis</label>
+                            <div class="mt-2">
+                                <input id="costBasis" name="costBasis" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            </div>
+                        </div>
+                  
+                        <div>
+                          <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update</button>
+                        </div>
+                      </form>
+                      <form class="space-y-6" method="post" action="{% url 'portfolio:deleteposition' %}">
+                        {% csrf_token %}
+                        <input class="hidden" id ="deleteTicker" name="deleteTicker" type="text">
+                        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
+                      </form>
+
+                </div>
+            </div>
+           
         </div>
     </div>
     {% else %}
@@ -62,5 +98,33 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    function onClick(ticker, quantity, cost)
+    {
+        document.getElementById("selectedStock").classList.toggle("hidden");
+
+        document.getElementById("ticker").readOnly = false;
+        document.getElementById("ticker").value = ticker;
+        document.getElementById("ticker").readOnly = "readonly";
+        document.getElementById("deleteTicker").value = ticker;
+        document.getElementById("quantity").value = quantity;
+        document.getElementById("costBasis").value = cost;
+
+    }
+
+    function toggleMobileMenu()
+    {
+    document.getElementById("mobile-menu").classList.toggle("hidden");
+    document.getElementById("mobile-menu-closed").classList.toggle("hidden");
+    document.getElementById("mobile-menu-opened").classList.toggle("hidden");
+  
+    }
+
+
+</script>
 {% endblock %}
 

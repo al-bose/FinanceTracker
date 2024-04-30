@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Positions
+import environ
+import json
 
 # Create your views here.
 
@@ -20,4 +22,11 @@ def createPosition(request):
         position.save()
         return main(request)
     else:
-        return render(request, "portfolio/createposition.html")
+        env = environ.Env()
+        environ.Env.read_env()   
+        context = {
+            "api_key" : env("API_KEY")
+        }
+        return render(request, "portfolio/createposition.html", context)
+
+

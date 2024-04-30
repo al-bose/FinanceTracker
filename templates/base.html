@@ -82,12 +82,14 @@
 </body>
 </html>
 
+{% block scripts %}
 <script>
-function toggleMobileMenu()
-{
-  document.getElementById("mobile-menu").classList.toggle("hidden");
-  document.getElementById("mobile-menu-closed").classList.toggle("hidden");
-  document.getElementById("mobile-menu-opened").classList.toggle("hidden");
-
-}
-</script>
+  function toggleMobileMenu()
+  {
+    document.getElementById("mobile-menu").classList.toggle("hidden");
+    document.getElementById("mobile-menu-closed").classList.toggle("hidden");
+    document.getElementById("mobile-menu-opened").classList.toggle("hidden");
+  
+  }
+  </script>
+{% endblock %}

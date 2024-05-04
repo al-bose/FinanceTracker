@@ -44,7 +44,19 @@ def main(request):
             Positions.CRYPTO : 0
         },
         "change": {
-             Positions.RETIREMENT : 0,
+            Positions.RETIREMENT : 0,
+            Positions.INDIVIDUAL : 0,
+            Positions.ROTH : 0,
+            Positions.CRYPTO : 0
+        },
+        "daily_change": {
+            Positions.RETIREMENT : 0,
+            Positions.INDIVIDUAL : 0,
+            Positions.ROTH : 0,
+            Positions.CRYPTO : 0
+        },
+        "daily_percentage_change": {
+            Positions.RETIREMENT : 0,
             Positions.INDIVIDUAL : 0,
             Positions.ROTH : 0,
             Positions.CRYPTO : 0
@@ -55,7 +67,9 @@ def main(request):
         "current_value": 0,
         "total_cost": 0,
         "percentage_change": 0,
-        "change": 0
+        "change": 0,
+        "daily_change": 0,
+        "daily_percentage_change": 0
     }
 
     for stock in stocks:
@@ -94,7 +108,7 @@ def main(request):
                 "1. open": "167.4000",
                 "2. high": "168.2200",
                 "3. low": "166.2250",
-                "4. close": "167.4300",
+                "4. close": "165.4300",
                 "5. volume": "5263342"
                 }
             }
@@ -104,16 +118,27 @@ def main(request):
         most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
         most_recent_price = Decimal(most_recent_entry["4. close"])
 
+        days = list(data["Time Series (Daily)"].keys())
+        sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
+
+        second_most_recent_refresh = sorted_days[1]
+        second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
+        second_most_recent_price = Decimal(second_most_recent_entry["4. close"])
+
         current_value = most_recent_price * stock.quantity
+        last_value = second_most_recent_price * stock.quantity
         total_cost = stock.quantity * stock.cost_basis
         percentage_change = (current_value - total_cost)/total_cost * 100
+        daily_percentage_change = (current_value - last_value)/last_value * 100
 
         if stock.ticker in total_ticker_prices.keys():
             total_ticker_prices[stock.ticker][stock.type] = {
                 "current_value": round(current_value,2),
                 "total_cost": round(total_cost,2),
                 "change": round(current_value - total_cost, 2),
-                "percentage_change": round(percentage_change, 2)
+                "percentage_change": round(percentage_change, 2),
+                "daily_change": round(current_value - last_value),
+                "daily_percentage_change": round(daily_percentage_change, 2)
             }
         else:
             total_ticker_prices[stock.ticker] = {
@@ -121,19 +146,21 @@ def main(request):
                     "current_value": round(current_value,2),
                     "total_cost": round(total_cost,2),
                     "change": round(current_value - total_cost, 2),
-                    "percentage_change": round(percentage_change, 2)
+                    "percentage_change": round(percentage_change, 2),
+                    "daily_change": round(current_value - last_value),
+                    "daily_percentage_change": round(daily_percentage_change, 2)
                 }
             }
         
-
-
         total_type_prices["current_value"][stock.type] += current_value
         total_type_prices["total_cost"][stock.type] += total_cost
         total_type_prices["change"][stock.type] += (current_value - total_cost)
+        total_type_prices["daily_change"][stock.type] += (current_value - last_value)
 
         total_prices["current_value"] += current_value
         total_prices["total_cost"] += total_cost
         total_prices["change"] += (current_value - total_cost)
+        total_prices["daily_change"] += (current_value - last_value)
 
         stock.cost_basis = round(stock.cost_basis, 2)
         stock.quantity = round(stock.quantity, 2)
@@ -141,14 +168,18 @@ def main(request):
     for type in Positions.TYPE_CHOICES.keys():
         if total_type_prices["total_cost"][type] > 0:
             total_type_prices["percentage_change"][type] = round((total_type_prices["current_value"][type] - total_type_prices["total_cost"][type])/total_type_prices["total_cost"][type] * 100,2)
+            total_type_prices["daily_percentage_change"][type] = round((total_type_prices["daily_change"][type])/(total_type_prices["current_value"][type] - total_type_prices["daily_change"][type])* 100,2)
             total_type_prices["current_value"][type] = round(total_type_prices["current_value"][type],2)
             total_type_prices["total_cost"][type] = round(total_type_prices["total_cost"][type],2)
             total_type_prices["change"][type] = round(total_type_prices["change"][type],2)
+            total_type_prices["daily_change"][type] = round(total_type_prices["change"][type], 2)
 
     total_prices["percentage_change"] = round((total_prices["current_value"] - total_prices["total_cost"])/total_prices["total_cost"] * 100,2)
+    total_prices["daily_percentage_change"] = round((total_prices["daily_change"])/(total_prices["current_value"] - total_prices["daily_change"])* 100,2)
     total_prices["current_value"] = round(total_prices["current_value"],2)
     total_prices["total_cost"] = round(total_prices["total_cost"],2)
     total_prices["change"] = round(total_prices["change"],2)
+    total_prices["daily_change"] = round(total_prices["daily_change"], 2)
 
     context = {"total_ticker_prices": total_ticker_prices, "total_type_prices": total_type_prices, "total_prices": total_prices,  "roth": roth, "individual": individual, "retirement": retirement}
     return render(request, "portfolio/index.html", context)

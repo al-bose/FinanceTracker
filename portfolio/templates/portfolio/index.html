@@ -7,48 +7,243 @@
     <div>
         <form method="get" action="{% url 'portfolio:createposition' %}">
             {% csrf_token %}
-            <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 hover:text-white rounded-md p-2 mt-6 font-medium">Add Position</button>
+            <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">Add Position</button>
         </form>
     </div>
-    {% if stocks %}
-    <div class="grid sm:grid-cols-2 gap-10">
-        <div>
-            <ul role="list" class="divide-y">
-                {% for stock in stocks %}
-                <li class="justify-between gap-x-6 py-5">
-                    <div class="gap-x-4 p-2 hover:border-2 border-0 border-white rounded-lg hover:cursor-pointer " onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}')">
-                        <div class="min-w-0 grid sm:grid-cols-3">
-                            <div class="font-bold leading-6 text-gray-400">
-                                {{stock.ticker}}
-                            </div>
-                            <div class="font-bold leading-4 text-gray-400">
-                                {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
-                            </div>
-                            {% if total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change" > 0 %}
-                            <div class="font-bold leading-6 text-green-400">
-                                +{{total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change"}}%
-                            </div>
-                            {% else %}
-                            <div class="font-bold leading-6 text-red-600">
-                                -{{total_ticker_prices|get_item:stock.ticker|get_item:"percentage_change"}}%
-                            </div>
-                            {% endif %}
+    {% if individual or roth or retirement %}
+    <div class="flex flex-col sm:flex-row gap-10 justify-stretch">
+        <div class="flex flex-col gap-10 flex-grow">
 
-                        </div>
+            {% if individual %}
+            <div>
+                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
+                    <div class="text-white font-bold underline">
+                        Individual Positions
                     </div>
-                </li>
-                {% endfor %}
-            </ul>
+
+                    <div class="flex flex-col">
+                        {% if total_type_prices|get_item:"percentage_change"|get_item:"INDIVIDUAL" > 0 %}
+                        <div class="font-bold text-green-400">
+                            +{{total_type_prices|get_item:"percentage_change"|get_item:"INDIVIDUAL"}}%
+                        </div>
+                        {% else %}
+                        <div class="font-bold text-red-400">
+                            -{{total_type_prices|get_item:"percentage_change"|get_item:"INDIVIDUAL"}}%
+                        </div>
+                        {% endif %}
+    
+                        {% if total_type_prices|get_item:"change"|get_item:"INDIVIDUAL" > 0 %}
+                        <div class="text-green-400">
+                            (+${{total_type_prices|get_item:"change"|get_item:"INDIVIDUAL"}})
+                        </div>
+                        {% else %}
+                        <div class="text-red-400">
+                            (-${{total_type_prices|get_item:"change"|get_item:"INDIVIDUAL"}})
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <ul role="list">
+                    {% for stock in individual %}
+                    <li class=>
+                        <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
+                            <div class="flex flex-col sm:flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <div class="font-bold text-white">
+                                        {{stock.ticker}}
+                                    </div>
+                                    <div class="text-gray-400">
+                                        {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
+                                    <div class="font-bold text-green-400">
+                                        +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                    </div>
+                                    {% else %}
+                                    <div class="font-bold text-red-400">
+                                        -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                    </div>
+                                    {% endif %}
+
+                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
+                                    <div class="text-green-400">
+                                        (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"}})
+                                    </div>
+                                    {% else %}
+                                    <div class="text-red-400">
+                                        (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"}})
+                                    </div>
+                                    {% endif %}
+                                </div>  
+    
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if retirement %}
+            <div>
+                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
+                    <div class="text-white font-bold underline">
+                        401K Positions
+                    </div>
+
+                    <div class="flex flex-col">
+                        {% if total_type_prices|get_item:"percentage_change"|get_item:"401K" > 0 %}
+                        <div class="font-bold text-green-400">
+                            +{{total_type_prices|get_item:"percentage_change"|get_item:"401K"}}%
+                        </div>
+                        {% else %}
+                        <div class="font-bold text-red-400">
+                            -{{total_type_prices|get_item:"percentage_change"|get_item:"401K"}}%
+                        </div>
+                        {% endif %}
+    
+                        {% if total_type_prices|get_item:"change"|get_item:"401K" > 0 %}
+                        <div class="text-green-400">
+                            (+${{total_type_prices|get_item:"change"|get_item:"401K"}})
+                        </div>
+                        {% else %}
+                        <div class="text-red-400">
+                            (-${{total_type_prices|get_item:"change"|get_item:"401K"}})
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <ul role="list">
+                    {% for stock in retirement %}
+                    <li class=>
+                        <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
+                            <div class="flex flex-col sm:flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <div class="font-bold text-white">
+                                        {{stock.ticker}}
+                                    </div>
+                                    <div class="text-gray-400">
+                                        {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
+                                    <div class="font-bold text-green-400">
+                                        +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                    </div>
+                                    {% else %}
+                                    <div class="font-bold text-red-400">
+                                        -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                    </div>
+                                    {% endif %}
+
+                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
+                                    <div class="text-green-400">
+                                        (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"}})
+                                    </div>
+                                    {% else %}
+                                    <div class="text-red-400">
+                                        (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"}})
+                                    </div>
+                                    {% endif %}
+                                </div>  
+    
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if roth %}
+            <div>
+                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
+                    <div class="text-white font-bold underline">
+                        Roth IRA Positions
+                    </div>
+
+                    <div class="flex flex-col">
+                        {% if total_type_prices|get_item:"percentage_change"|get_item:"ROTH" > 0 %}
+                        <div class="font-bold text-green-400">
+                            +{{total_type_prices|get_item:"percentage_change"|get_item:"ROTH"}}%
+                        </div>
+                        {% else %}
+                        <div class="font-bold text-red-400">
+                            -{{total_type_prices|get_item:"percentage_change"|get_item:"ROTH"}}%
+                        </div>
+                        {% endif %}
+    
+                        {% if total_type_prices|get_item:"change"|get_item:"ROTH" > 0 %}
+                        <div class="text-green-400">
+                            (+${{total_type_prices|get_item:"change"|get_item:"ROTH"}})
+                        </div>
+                        {% else %}
+                        <div class="text-red-400">
+                            (-${{total_type_prices|get_item:"change"|get_item:"ROTH"}})
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <ul role="list">
+                    {% for stock in roth %}
+                    <li class=>
+                        <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
+                            <div class="flex flex-col sm:flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <div class="font-bold text-white">
+                                        {{stock.ticker}}
+                                    </div>
+                                    <div class="text-gray-400">
+                                        {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
+                                    </div>
+                                </div>
+                                <div class="flex flex-col">
+                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
+                                    <div class="font-bold text-green-400">
+                                        +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                    </div>
+                                    {% else %}
+                                    <div class="font-bold text-red-400">
+                                        -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                    </div>
+                                    {% endif %}
+
+                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
+                                    <div class="text-green-400">
+                                        (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"}})
+                                    </div>
+                                    {% else %}
+                                    <div class="text-red-400">
+                                        (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"}})
+                                    </div>
+                                    {% endif %}
+                                </div>  
+    
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
         </div>
         <div>
-            <div class="grid grid-rows-2 gap-10">
+            <div class="flex flex-col gap-10">
                 <div>
-                    <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Value : ${{total_prices|get_item:"current_value"}}</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-400 sm:text-4xl snap-center">Porfolio Cost : ${{total_prices|get_item:"total_cost"}}</p>
+                    <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">Porfolio Value : ${{total_prices|get_item:"current_value"}}</p>
                     {% if total_prices|get_item:"percentage_change" > 0%}
-                        <p class="mt-2 text-3xl font-bold text-green-400 sm:text-4xl snap-center">Portfolio Growth : +{{total_prices|get_item:"percentage_change"}}%</p>
+                        <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Portfolio Growth : +{{total_prices|get_item:"percentage_change"}}%</p>
                     {% else %}
-                    <p class="mt-2 text-3xl font-bold text-red-600 sm:text-4xl snap-center">Portfolio Growth : -{{total_prices|get_item:"percentage_change"}}%</p>
+                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Portfolio Growth : -{{total_prices|get_item:"percentage_change"}}%</p>
+                    {% endif %}
+
+                    {% if total_prices|get_item:"change" > 0%}
+                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Portfolio Growth : +${{total_prices|get_item:"change"}}</p>
+                    {% else %}
+                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Portfolio Growth : -${{total_prices|get_item:"change"}}</p>
                     {% endif %}
                 </div>
                 <div id="selectedStock" class="hidden">
@@ -57,23 +252,28 @@
                         <div>
                             <label for="ticker" class="block text-sm font-medium leading-6 text-gray-300">Ticker</label>
                             <div class="mt-2 relative">
-                              <input id="ticker" name="ticker" type="text" readonly="readonly" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                              <input id="ticker" name="ticker" type="text" readonly="readonly" class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                           </div>
                         </div>
                 
                         <div>
                             <label for="quantity" class="block text-sm font-medium leading-6 text-gray-300">Quantity</label>
                             <div class="mt-2">
-                                <input id="quantity" name="quantity" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <input id="quantity" name="quantity" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
                 
                         <div>
                             <label for="costBasis" class="block text-sm font-medium leading-6 text-gray-300">Cost Basis</label>
                             <div class="mt-2">
-                                <input id="costBasis" name="costBasis" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                <input id="costBasis" name="costBasis" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
+
+                        <div class="mt-2">
+                            <input type = "radio" id="type" name="type" readonly="readonly" checked>
+                            <label id="type-label" class="text-sm font-medium leading-6 text-gray-300" for="type"></label>
+                          </div>
                   
                         <div>
                           <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update</button>
@@ -82,9 +282,9 @@
                       <form class="space-y-6" method="post" action="{% url 'portfolio:deleteposition' %}">
                         {% csrf_token %}
                         <input class="hidden" id ="deleteTicker" name="deleteTicker" type="text">
+                        <input class="hidden" id ="deleteType" name="deleteType" type="radio">
                         <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
                       </form>
-
                 </div>
             </div>
            
@@ -103,16 +303,24 @@
 {% block scripts %}
 <script>
 
-    function onClick(ticker, quantity, cost)
+    function onClick(ticker, quantity, cost, type, typeDisplay)
     {
         document.getElementById("selectedStock").classList.toggle("hidden");
 
         document.getElementById("ticker").readOnly = false;
         document.getElementById("ticker").value = ticker;
         document.getElementById("ticker").readOnly = "readonly";
+
+        document.getElementById("type").value = type;
+        document.getElementById("type-label").innerText = typeDisplay;
+
         document.getElementById("deleteTicker").value = ticker;
+        document.getElementById("deleteType").value = type;
+
         document.getElementById("quantity").value = quantity;
         document.getElementById("costBasis").value = cost;
+
+        document.getElementById(ticker +'_'+type).classList.toggle("border-2");
 
     }
 

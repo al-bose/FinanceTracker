@@ -10,7 +10,7 @@
     </div>
 
     {% if expenses %}
-    <div class="flex flex-col sm:flex-row gap-10 justify-stretch py-5">
+    <div class="flex flex-col sm:flex-row gap-10 justify-between py-5">
         <div class="flex flex-col gap-10 flex-grow">
             {% for expense in expenses %}
             <ul role="list">
@@ -35,6 +35,9 @@
         </div>
         <div>
             <div class="flex flex-col gap-10">
+                <div>
+                    <canvas id="myChart" ></canvas>
+                </div>
                 <div id="selectedExpense" class="hidden">
                     <form class="space-y-6" method="post" action="{% url 'budget:updateexpense' %}">
                         {% csrf_token %}
@@ -86,14 +89,62 @@
     </div>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block scripts %}
 <script>
+    function drawPieGraph(data, id)
+    {   
+        var labels = data.Labels; 
+        var chartLabel = data.chartLabel; 
+        var chartdata = data.chartdata; 
+
+        var ctx = document.getElementById(id).getContext('2d'); 
+        var chart = new Chart(ctx, { 
+        // The type of chart we want to create 
+        type: 'pie', 
+
+        // The data for our dataset 
+        data: { 
+            labels: labels, 
+            datasets: [{ 
+            label: chartLabel, 
+            backgroundColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
+            borderColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
+            data: chartdata, 
+            }] 
+        },
+        options: {
+            plugins: {
+                title: {
+                    display : true,
+                    text : "30 Day Breakdown",
+                    color: "rgb(255,255,255)"
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: "rgb(255, 255, 255)"
+                    }
+                }
+            }
+        }
+    
+    }); 
+    }
+
+    function createChart()
+    {
+        var data = fetch("http://localhost:8000/budget/createchartdata")
+        .then((response) => response.json())
+        .then((response_data) => drawPieGraph(response_data, "myChart"))
+       
+        .catch((error) => console.log(error)); 
+    }
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        createChart();
+    });
 
     function onClick(description, amount, type, date, id)
     {
-        date = date.f
         document.getElementById("selectedExpense").classList.toggle("hidden");
         document.getElementById("description").value = description;
         document.getElementById("amount").value = amount;
@@ -113,7 +164,13 @@
     document.getElementById("mobile-menu-opened").classList.toggle("hidden");
   
     }
+</script>
+{% endblock %}
 
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
 
+   
+  
 </script>
 {% endblock %}

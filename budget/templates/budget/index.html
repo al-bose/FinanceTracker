@@ -16,7 +16,7 @@
         </div>
         <div>
             <div>
-                <form method="get" action="{% url 'budget:viewhistory' %}">
+                <form method="get" action="{% url 'budget:expenses' %}">
                     {% csrf_token %}
                     <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">View/Edit Expenses</button>
                 </form>

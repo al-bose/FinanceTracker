@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% load humanize %}
+{% block content %}
+
+<div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
+    <div>
+        <form method="get" action="{% url 'portfolio:createposition' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">Add Position</button>
+        </form>
+    </div>
+
+    {% if expenses %}
+            {% for expense in expenses %}
+                <ul role="list">
+                    <li id="{{expense.id}}" class="p-2">
+                        <div class="flex flex-col sm:flex-row justify-between">
+                            <div class="flex flex-col">
+                                <span class="text-white font-bold">{{expense.description}}</span>
+                                <span class="text-gray-400 ">{{expense.date|date:"D d M, Y"}}</span>
+                            </div>
+                            <div class="flex flex-col sm:items-end">
+                                <span class="text-white">${{expense.amount|intcomma}}</span>
+                                <span class="text-gray-400 ">{{expense.type}}</span>
+                            </div>  
+
+                        </div>
+                    </li>
+                </ul>
+            {% endfor %}  
+    {% else %}
+        <div class="flex flex-col items-center mt-6">
+            <span class="text-sm text-gray-400 font-medium">No Expenses Found...</span>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+

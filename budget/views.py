@@ -1,3 +1,5 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -6,6 +8,8 @@ from django.urls import reverse
 from decimal import Decimal
 import datetime
 from timedelta import Timedelta
+from django.views.generic.list import ListView
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 
@@ -100,6 +104,11 @@ def createChartData(request):
 
     return JsonResponse(data)
 
-@login_required
-def viewHistory(request):
-    return HttpResponseRedirect(reverse("budget:main")) 
+
+@method_decorator(login_required, name='dispatch')
+class ExpenseListView(ListView):
+    model = Expenses
+    context_object_name = "expenses"
+
+    def get_queryset(self):
+       return Expenses.objects.filter(user_id=self.request.user.id).order_by('-date')

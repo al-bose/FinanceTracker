@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from budget.views import ExpenseListView
 
 app_name = "budget"
 urlpatterns = [
@@ -9,5 +10,5 @@ urlpatterns = [
     path("updateexpense", views.updateExpense, name="updateexpense"),
     path("deleteexpense", views.deleteExpense, name="deleteexpense"),
     path("createchartdata", views.createChartData, name="createchartdata"),
-    path("viewhistory", views.viewHistory, name='viewhistory')
+    path("expenses", ExpenseListView.as_view(), name='expenses')
 ]

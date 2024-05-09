@@ -11,8 +11,8 @@
         </form>
     </div>
 
-    {% if expenses %}
-            {% for expense in expenses %}
+    {% if page_obj %}
+            {% for expense in page_obj %}
                 <ul role="list">
                     <li id="{{expense.id}}" class="p-2">
                         <div class="flex flex-col sm:flex-row justify-between">
@@ -29,6 +29,22 @@
                     </li>
                 </ul>
             {% endfor %}  
+
+            <div class="flex flex-col items-center">
+                <!-- Help text -->
+                <span class="text-sm text-white">
+                    Page <span class="font-semibold text-white">{{ page_obj.number }}</span> of <span class="font-semibold text-white">{{ page_obj.paginator.num_pages}}</span>
+                </span>
+                <div class="inline-flex mt-2 xs:mt-0">
+                  <!-- Buttons -->
+                  {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="text-white underline rounded-md px-3 py-2 text-sm font-medium">Prev</a>
+                  {% endif %}
+                  {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="text-white underline rounded-md px-3 py-2 text-sm font-medium">Next</a>
+                  {% endif %}
+                </div>
+              </div>
     {% else %}
         <div class="flex flex-col items-center mt-6">
             <span class="text-sm text-gray-400 font-medium">No Expenses Found...</span>

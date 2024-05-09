@@ -108,7 +108,7 @@ def createChartData(request):
 @method_decorator(login_required, name='dispatch')
 class ExpenseListView(ListView):
     model = Expenses
-    context_object_name = "expenses"
+    paginate_by = 2
 
     def get_queryset(self):
        return Expenses.objects.filter(user_id=self.request.user.id).order_by('-date')

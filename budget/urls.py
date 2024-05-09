@@ -8,5 +8,6 @@ urlpatterns = [
     path('createexpense', views.createExpense, name='createexpense'),
     path("updateexpense", views.updateExpense, name="updateexpense"),
     path("deleteexpense", views.deleteExpense, name="deleteexpense"),
-    path("createchartdata", views.createChartData, name="createchartdata")
+    path("createchartdata", views.createChartData, name="createchartdata"),
+    path("viewhistory", views.viewHistory, name='viewhistory')
 ]

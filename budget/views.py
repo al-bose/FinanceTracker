@@ -99,3 +99,7 @@ def createChartData(request):
     print(data)
 
     return JsonResponse(data)
+
+@login_required
+def viewHistory(request):
+    return HttpResponseRedirect(reverse("budget:main")) 

@@ -1,94 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
-    <div>
-        <form method="get" action="{% url 'budget:createexpense' %}">
-            {% csrf_token %}
-            <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">Add Expense</button>
-        </form>
+
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm lg:max-w-lg">
+        <canvas id="myChart" ></canvas>
     </div>
 
-    {% if expenses %}
-    <div class="flex flex-col sm:flex-row gap-10 justify-between py-5">
-        <div class="flex flex-col gap-10 flex-grow">
-            {% for expense in expenses %}
-            <ul role="list">
-                <li id="{{expense.id}}">
-                    <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{expense.description}}', '{{expense.amount}}', '{{expense.type}}', '{{expense.date}}', '{{expense.id}}')">
-                        <div class="flex flex-col sm:flex-row justify-between">
-                            <div class="flex flex-col">
-                                <span class="text-white font-bold">{{expense.description}}</span>
-                                <span class="text-gray-400 ">{{expense.date|date:"D d M Y"}}</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-white font-bold">${{expense.amount}}</span>
-                                <span class="text-gray-400 ">{{expense.type}}</span>
-                            </div>  
-
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            
-            {% endfor %}
+    <div class="flex flex-col sm:flex-row gap-10 py-5 justify-center items-center">
+        <div>
+            <form method="get" action="{% url 'budget:createexpense' %}">
+                {% csrf_token %}
+                <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">Add Expense</button>
+            </form>
         </div>
         <div>
-            <div class="flex flex-col gap-10">
-                <div>
-                    <canvas id="myChart" ></canvas>
-                </div>
-                <div id="selectedExpense" class="hidden">
-                    <form class="space-y-6" method="post" action="{% url 'budget:updateexpense' %}">
-                        {% csrf_token %}
-                        <input class="hidden" id ="updateExpense" name="updateExpense" type="text">
-                        <div>
-                            <label for="description" class="block text-sm font-medium leading-6 text-gray-300">Description</label>
-                            <div class="mt-2 relative">
-                              <input id="description" name="description" type="text" class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                          </div>
-                        </div>
-                
-                        <div>
-                            <label for="amount" class="block text-sm font-medium leading-6 text-gray-300">Amount</label>
-                            <div class="mt-2">
-                                <input id="amount" name="amount" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            </div>
-                        </div>              
-
-                        <div>
-                            {% for k,v in types.items %}
-                              <div class="mt-2">
-                                <input type = "radio" id="{{ k }}" name="type" value="{{ k }}" required class="">
-                                <label class="text-sm font-medium leading-6 text-white" for="{{ k }}">{{v}}</label>
-                              </div>
-                            {% endfor %}
-                        </div>
-
-                        <div>
-                            <label for="date" class="block text-sm font-medium leading-6 text-white">Date</label>
-                            <input id="date" name="date" type="date" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                        </div>
-
-                          <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update</button>
-
-                      </form>
-                      <form class="space-y-6" method="post" action="{% url 'budget:deleteexpense' %}">
-                        {% csrf_token %}
-                        <input class="hidden" id ="deleteExpense" name="deleteExpense" type="text">
-                        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
-                      </form>
-                    </div>
-                </div>
+            <div>
+                <form method="get" action="{% url 'budget:viewhistory' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">View/Edit Expenses</button>
+                </form>
             </div>
         </div>
+
     </div>
-    {% else %}
-    <div class="flex flex-col items-center mt-6">
-        <span class="text-sm text-gray-400 font-medium">No Expenses Found...</span>
-    </div>
-    {% endif %}
+
 </div>
+
 <script>
     function drawPieGraph(data, id)
     {   
@@ -98,41 +36,43 @@
 
         var ctx = document.getElementById(id).getContext('2d'); 
         var chart = new Chart(ctx, { 
-        // The type of chart we want to create 
-        type: 'pie', 
+            type: 'pie', 
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                label: chartLabel, 
+                backgroundColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
+                borderColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
+                data: chartdata, 
+                }] 
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display : true,
+                        text : "30 Day Breakdown",
+                        color: "rgb(255,255,255)",
+                        font: {
+                            size: 20
+                        }
 
-        // The data for our dataset 
-        data: { 
-            labels: labels, 
-            datasets: [{ 
-            label: chartLabel, 
-            backgroundColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
-            borderColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
-            data: chartdata, 
-            }] 
-        },
-        options: {
-            plugins: {
-                title: {
-                    display : true,
-                    text : "30 Day Breakdown",
-                    color: "rgb(255,255,255)"
-                },
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: "rgb(255, 255, 255)"
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: "rgb(255, 255, 255)",
+                            usePointStyle : true
+                        }
+
                     }
                 }
             }
-        }
-    
-    }); 
+        }); 
     }
 
     function createChart()
     {
-        var data = fetch("http://localhost:8000/budget/createchartdata")
+        var data = fetch("{% url 'budget:createchartdata' %}")
         .then((response) => response.json())
         .then((response_data) => drawPieGraph(response_data, "myChart"))
        
@@ -142,35 +82,17 @@
     window.addEventListener('DOMContentLoaded', (event) => {
         createChart();
     });
-
-    function onClick(description, amount, type, date, id)
-    {
-        document.getElementById("selectedExpense").classList.toggle("hidden");
-        document.getElementById("description").value = description;
-        document.getElementById("amount").value = amount;
-        document.getElementById("date").value = date;
-        document.getElementById(type).classList.toggle("checked");
-        document.getElementById("deleteExpense").value = id;
-        document.getElementById("updateExpense").value = id;
-
-        document.getElementById(id).classList.toggle("border-2");
-
-    }
-
-    function toggleMobileMenu()
-    {
-    document.getElementById("mobile-menu").classList.toggle("hidden");
-    document.getElementById("mobile-menu-closed").classList.toggle("hidden");
-    document.getElementById("mobile-menu-opened").classList.toggle("hidden");
-  
-    }
 </script>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js">
 
+    function toggleMobileMenu() {
+        document.getElementById("mobile-menu").classList.toggle("hidden");
+        document.getElementById("mobile-menu-closed").classList.toggle("hidden");
+        document.getElementById("mobile-menu-opened").classList.toggle("hidden");
+    }
    
-  
 </script>
 {% endblock %}

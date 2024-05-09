@@ -1,5 +1,4 @@
 from typing import Any
-from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -9,7 +8,7 @@ from decimal import Decimal
 import datetime
 from timedelta import Timedelta
 from django.views.generic.list import ListView
-from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
@@ -51,40 +50,38 @@ def createExpense(request):
 
 
 @login_required
-def updateExpense(request):
-
-    existing_expense_query = Expenses.objects.filter(id= request.POST['updateExpense'])
-    print(request)
-
-    if existing_expense_query:
-        existing_expense = existing_expense_query.first()
-        existing_expense.description = request.POST["description"]
-        existing_expense.amount = Decimal(request.POST["amount"])
-        existing_expense.type = request.POST["type"]
-        existing_expense.date = request.POST["date"]
-        existing_expense.save()
-
-    return HttpResponseRedirect(reverse("budget:main")) 
+def updateExpense(request, updateId):
+    expense = Expenses.objects.filter(user_id = request.user.id).filter(id=updateId).get()
+    if request.method == "POST":
+        expense.description = request.POST["description"]
+        expense.amount = Decimal(request.POST["amount"])
+        expense.type = request.POST["type"]
+        expense.date = request.POST["date"]
+        expense.save()
+        return HttpResponseRedirect(reverse("budget:expenses")) 
+    else:
+        context = {
+            "types" : Expenses.TYPE_CHOICES,
+            "expense" : expense
+        }
+        return render(request, "budget/updateexpense.html", context)
+        
 
 @login_required
 def deleteExpense(request):
-    eexisting_expense_query = Expenses.objects.filter(id= request.POST['deleteExpense'])
-    print(request)
-    if eexisting_expense_query:
-        existing_expense = eexisting_expense_query.first()
+    existing_expense_query = Expenses.objects.filter(id= request.POST['deleteExpense'])
+    if existing_expense_query:
+        existing_expense = existing_expense_query.first()
         existing_expense.delete()
-    return HttpResponseRedirect(reverse("budget:main")) 
+    return HttpResponseRedirect(reverse("budget:expenses")) 
 
 @login_required
 def createChartData(request):
-    print('here')
-
     chartLabel = "Expenses in Last 30 days"
 
     delta = Timedelta(days=-30)
     last_month = datetime.datetime.now() + delta
     expenses = Expenses.objects.filter(user_id=request.user.id).filter(date__gte = last_month)
-
     data = {}
 
     for type in Expenses.TYPE_CHOICES.keys():
@@ -100,15 +97,14 @@ def createChartData(request):
         "chartdata": [data[type] for type in labels]
     }
 
-    print(data)
-
     return JsonResponse(data)
 
 
-@method_decorator(login_required, name='dispatch')
-class ExpenseListView(ListView):
+class ExpenseListView(LoginRequiredMixin, ListView):
     model = Expenses
     paginate_by = 2
 
     def get_queryset(self):
        return Expenses.objects.filter(user_id=self.request.user.id).order_by('-date')
+
+    

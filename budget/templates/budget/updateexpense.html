@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if expense %}
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+      <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
+      <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Edit Expense</h2>
+    </div>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <form class="space-y-6" method="post" action="{% url 'budget:updateexpense' expense.id%}">
+        {% csrf_token %}
+        <div>
+            <label for="description" class="block text-sm font-medium leading-6 text-white">Description</label>
+            <div class="mt-2 relative">
+              <input id="description" name="description" type="text" class="block w-full rounded-md py-1.5 px-1.5 text-gray-900 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value="{{expense.description}}">
+            </div>
+        </div>
+
+        <div>
+            <label for="amount" class="block text-sm font-medium leading-6 text-white">Amount</label>
+            <div class="mt-2">
+                <input id="amount" name="amount" type="number" step="0.00001" required class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value="{{expense.amount}}">
+            </div>
+        </div>
+
+        <div>
+          {% for k,v in types.items %}
+            <div class="mt-2">
+                {% if expense.type == v %}
+                    <input type = "radio" id="{{ k }}" name="type" value="{{ k }}" required checked>
+                {% else %}
+                    <input type = "radio" id="{{ k }}" name="type" value="{{ k }}" required>
+                {% endif %}
+                    <label class="text-sm font-medium leading-6 text-white" for="{{ k }}">{{v}}</label>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div>
+            <label for="date" class="block text-sm font-medium leading-6 text-white">Date</label>
+            <input id="date" name="date" type="date" required class="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value="{{expense.date|date:'Y-m-d'}}">
+        </div>
+  
+        <div>
+            <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Update</button>
+            <a href="{% url 'budget:expenses' %}" class="flex w-full justify-center rounded-md bg-gray-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Cancel</a>
+        </div>
+      </form>
+      <form class="" method="post" action="{% url 'budget:deleteexpense' expense.id %}">
+        {% csrf_token %}
+        <input class="hidden" id ="deleteExpense" name="deleteExpense" type="text">
+        <button type="submit" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
+      </form>
+    </div>
+</div>
+{% else %}
+{% endif %}
+
+{% endblock %}

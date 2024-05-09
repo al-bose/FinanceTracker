@@ -288,47 +288,4 @@ def getTickerData(ticker):
 
     return data
 
-def calculateTotalTickerPrices(stocks):
-    total_ticker_prices = {}
-
-    for stock in stocks:
-            data = getTickerData(stock.ticker)
-
-            most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
-            most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
-            most_recent_price = Decimal(most_recent_entry["4. close"])
-
-            days = list(data["Time Series (Daily)"].keys())
-            sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
-
-            second_most_recent_refresh = sorted_days[1]
-            second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
-            second_most_recent_price = Decimal(second_most_recent_entry["4. close"])
-
-            current_value = most_recent_price * stock.quantity
-            last_value = second_most_recent_price * stock.quantity
-            total_cost = stock.quantity * stock.cost_basis
-            percentage_change = (current_value - total_cost)/total_cost * 100
-            daily_percentage_change = (current_value - last_value)/last_value * 100
-
-            if stock.ticker in total_ticker_prices.keys():
-                total_ticker_prices[stock.ticker][stock.type] = {
-                    "current_value": round(current_value,2),
-                    "total_cost": round(total_cost,2),
-                    "change": round(current_value - total_cost, 2),
-                    "percentage_change": round(percentage_change, 2),
-                    "daily_change": round(current_value - last_value),
-                    "daily_percentage_change": round(daily_percentage_change, 2)
-                }
-            else:
-                total_ticker_prices[stock.ticker] = {
-                    stock.type : {
-                        "current_value": round(current_value,2),
-                        "total_cost": round(total_cost,2),
-                        "change": round(current_value - total_cost, 2),
-                        "percentage_change": round(percentage_change, 2),
-                        "daily_change": round(current_value - last_value),
-                        "daily_percentage_change": round(daily_percentage_change, 2)
-                    }
-                }
 

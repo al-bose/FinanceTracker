@@ -23,7 +23,7 @@
                                 {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
                                 <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
                                 {% else %}
-                                <span class="text-red-400">(-{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
+                                <span class="text-red-400">({{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
                                 {% endif %}
                             </div>
                             <div class="text-gray-400">
@@ -37,17 +37,17 @@
                             </div>
                             {% else %}
                             <div class="font-bold text-red-400">
-                                -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                                {{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
                             </div>
                             {% endif %}
 
                             {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
                             <div class="text-green-400">
-                                (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
+                                (+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
                             </div>
                             {% else %}
                             <div class="text-red-400">
-                                (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
+                                ({{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
                             </div>
                             {% endif %}
                         </div>  

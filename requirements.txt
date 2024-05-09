@@ -3,9 +3,11 @@ certifi==2024.2.2
 charset-normalizer==3.3.2
 Django==5.0.2
 django-environ==0.11.2
+hiredis==2.3.2
 idna==3.7
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
+redis==5.0.4
 requests==2.31.0
 sqlparse==0.4.4
 timedelta==2020.12.3

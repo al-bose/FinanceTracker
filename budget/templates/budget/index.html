@@ -1,10 +1,16 @@
 {% extends "base.html" %}
+{% load custom_filters %}
+{% load humanize %}
 
 {% block content %}
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm lg:max-w-lg">
         <canvas id="myChart" ></canvas>
+    </div>
+
+    <div class="flex justify-center">
+        <p class="mt-2 font-bold text-white sm:text-xl">Total Spent This Month : ${{total|intcomma}}</p>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-10 py-5 justify-center items-center">
@@ -50,7 +56,7 @@
                 plugins: {
                     title: {
                         display : true,
-                        text : "30 Day Breakdown",
+                        text : "Spending This Month",
                         color: "rgb(255,255,255)",
                         font: {
                             size: 20
@@ -58,7 +64,8 @@
 
                     },
                     legend: {
-                        position: 'bottom',
+                        position: 'left',
+                        align: 'center',
                         labels: {
                             color: "rgb(255, 255, 255)",
                             usePointStyle : true

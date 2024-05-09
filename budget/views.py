@@ -1,4 +1,4 @@
-from typing import Any
+import calendar
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -14,10 +14,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 @login_required
 def main(request):
-    #default to showing expenses dating back to last 30 days
-    delta = Timedelta(days=-30)
-    last_month = datetime.datetime.now() + delta
-    expenses = Expenses.objects.filter(user_id=request.user.id).filter(date__gte = last_month)
+
+    #default to querying expenses from this current month
+    current_month = datetime.datetime.now().month
+    current_year = datetime.datetime.now().year
+    _, num_days = calendar.monthrange(current_year, current_month)
+
+    first_day = datetime.date(current_year, current_month, 1)
+    last_day = datetime.date(current_year, current_month, num_days)
+
+    expenses = Expenses.objects.filter(user_id=request.user.id).filter(date__gte = first_day).filter(date__lte = last_day)
+    total = 0
 
     data = {}
 
@@ -26,12 +33,13 @@ def main(request):
 
     for expense in expenses:
         data[expense.type] += expense.amount
-
+        total += expense.amount
 
     context = {
         'expenses': expenses,
         'types': Expenses.TYPE_CHOICES,
-        'data': data
+        'data': data,
+        'total': total
         }
 
     return render(request, 'budget/index.html', context)
@@ -77,11 +85,18 @@ def deleteExpense(request):
 
 @login_required
 def createChartData(request):
-    chartLabel = "Expenses in Last 30 days"
+    chartLabel = "Total Spent This Month"
 
-    delta = Timedelta(days=-30)
-    last_month = datetime.datetime.now() + delta
-    expenses = Expenses.objects.filter(user_id=request.user.id).filter(date__gte = last_month)
+    #default to querying expenses from this current month
+    current_month = datetime.datetime.now().month
+    current_year = datetime.datetime.now().year
+    _, num_days = calendar.monthrange(current_year, current_month)
+
+    first_day = datetime.date(current_year, current_month, 1)
+    last_day = datetime.date(current_year, current_month, num_days)
+
+    expenses = Expenses.objects.filter(user_id=request.user.id).filter(date__gte = first_day).filter(date__lte = last_day)
+
     data = {}
 
     for type in Expenses.TYPE_CHOICES.keys():

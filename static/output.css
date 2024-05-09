@@ -1124,6 +1124,11 @@ video {
     line-height: 1.25rem;
   }
 
+  .sm\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
   .sm\:leading-6 {
     line-height: 1.5rem;
   }

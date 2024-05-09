@@ -1,7 +1,7 @@
 echo "BUILD START"
 
 # create a virtual environment named 'venv' if it doesn't already exist
-python3.9 -m venv venv
+python3.12.2 -m venv venv
 
 # activate the virtual environment
 source venv/bin/activate
@@ -10,7 +10,7 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 
 # collect static files using the Python interpreter from venv
-python3.9 manage.py migrate
-python3.9 manage.py collectstatic --noinput
+python3.12.2 manage.py migrate
+python3.12.2 manage.py collectstatic --noinput
 
 echo "BUILD END"

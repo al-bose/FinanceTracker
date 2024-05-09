@@ -13,10 +13,12 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from pathlib import Path
 import environ
+from dotenv import load_dotenv
 
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
+load_dotenv()
 
 SECRET_KEY = env("SECRET_KEY")
 
@@ -33,7 +35,10 @@ SECRET_KEY = 'g(e=_-7)x19*hy289zsyt191j2&ixlsdr9qs!4uq(iu1w+b0a('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -146,3 +151,6 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/login"
+
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')

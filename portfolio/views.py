@@ -139,8 +139,11 @@ def main(request):
             total_type_prices["change"][type] = round(total_type_prices["change"][type],2)
             total_type_prices["daily_change"][type] = round(total_type_prices["change"][type], 2)
 
-    total_prices["percentage_change"] = round((total_prices["current_value"] - total_prices["total_cost"])/total_prices["total_cost"] * 100,2)
-    total_prices["daily_percentage_change"] = round((total_prices["daily_change"])/(total_prices["current_value"] - total_prices["daily_change"])* 100,2)
+    if total_prices["total_cost"] > 0:
+        total_prices["percentage_change"] = round((total_prices["current_value"] - total_prices["total_cost"])/total_prices["total_cost"] * 100,2)
+    if total_prices["current_value"] - total_prices["daily_change"] !=0:
+        total_prices["daily_percentage_change"] = round((total_prices["daily_change"])/(total_prices["current_value"] - total_prices["daily_change"])* 100,2)
+
     total_prices["current_value"] = round(total_prices["current_value"],2)
     total_prices["total_cost"] = round(total_prices["total_cost"],2)
     total_prices["change"] = round(total_prices["change"],2)

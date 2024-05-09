@@ -102,7 +102,7 @@ def createChartData(request):
 
 class ExpenseListView(LoginRequiredMixin, ListView):
     model = Expenses
-    paginate_by = 2
+    paginate_by = 10
 
     def get_queryset(self):
        return Expenses.objects.filter(user_id=self.request.user.id).order_by('-date')

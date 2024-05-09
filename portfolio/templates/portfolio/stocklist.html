@@ -11,7 +11,7 @@
             <span class="text-red-400">({{total_type_prices|get_item:"daily_percentage_change"|get_item:type}}%)</span>
             {% endif %}
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col sm:items-end">
             {% if total_type_prices|get_item:"percentage_change"|get_item:type > 0 %}
             <div class="font-bold text-green-400">
                 +{{total_type_prices|get_item:"percentage_change"|get_item:type}}%
@@ -51,7 +51,7 @@
                             {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
                         </div>
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col sm:items-end">
                         {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
                         <div class="font-bold text-green-400">
                             +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%

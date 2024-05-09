@@ -14,248 +14,16 @@
     {% if individual or roth or retirement %}
     <div class="flex flex-col sm:flex-row gap-10 justify-stretch">
         <div class="flex flex-col gap-10 flex-grow">
-
             {% if individual %}
-            <div>
-                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
-                    <div>
-                        <span class="text-white font-bold underline">Individual Positions</span>
-                        {% if total_type_prices|get_item:"daily_percentage_change"|get_item:"INDIVIDUAL" > 0 %}
-                        <span class="text-green-400">(+{{total_type_prices|get_item:"daily_percentage_change"|get_item:"INDIVIDUAL"}}%)</span>
-                        {% else %}
-                        <span class="text-red-400">(-{{total_type_prices|get_item:"daily_percentage_change"|get_item:"INDIVIDUAL"}}%)</span>
-                        {% endif %}
-                    </div>
-                    <div class="flex flex-col">
-                        {% if total_type_prices|get_item:"percentage_change"|get_item:"INDIVIDUAL" > 0 %}
-                        <div class="font-bold text-green-400">
-                            +{{total_type_prices|get_item:"percentage_change"|get_item:"INDIVIDUAL"}}%
-                        </div>
-                        {% else %}
-                        <div class="font-bold text-red-400">
-                            -{{total_type_prices|get_item:"percentage_change"|get_item:"INDIVIDUAL"}}%
-                        </div>
-                        {% endif %}
-    
-                        {% if total_type_prices|get_item:"change"|get_item:"INDIVIDUAL" > 0 %}
-                        <div class="text-green-400">
-                            (+${{total_type_prices|get_item:"change"|get_item:"INDIVIDUAL|intcomma"}})
-                        </div>
-                        {% else %}
-                        <div class="text-red-400">
-                            (-${{total_type_prices|get_item:"change"|get_item:"INDIVIDUAL|intcomma"}})
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <ul role="list">
-                    {% for stock in individual %}
-                    <li class=>
-                        <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
-                            <div class="flex flex-col sm:flex-row justify-between">
-                                <div class="flex flex-col">
-                                    <div>
-                                        <span class="font-bold text-white">{{stock.ticker}}</span>
-                                        {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
-                                        <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
-                                        {% else %}
-                                        <span class="text-red-400">(-{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="text-gray-400">
-                                        {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
-                                    </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
-                                    <div class="font-bold text-green-400">
-                                        +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
-                                    </div>
-                                    {% else %}
-                                    <div class="font-bold text-red-400">
-                                        -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
-                                    </div>
-                                    {% endif %}
-
-                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
-                                    <div class="text-green-400">
-                                        (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
-                                    </div>
-                                    {% else %}
-                                    <div class="text-red-400">
-                                        (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
-                                    </div>
-                                    {% endif %}
-                                </div>  
-    
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                {% include "./stocklist.html" with stocks=individual type="INDIVIDUAL" name="Individual Positions"%}
             {% endif %}
 
             {% if retirement %}
-            <div>
-                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
-                    <div>
-                        <span class="text-white font-bold underline">401K Positions</span>
-                        {% if total_type_prices|get_item:"daily_percentage_change"|get_item:"401K" > 0 %}
-                        <span class="text-green-400">(+{{total_type_prices|get_item:"daily_percentage_change"|get_item:"401K"}}%)</span>
-                        {% else %}
-                        <span class="text-red-400">(-{{total_type_prices|get_item:"daily_percentage_change"|get_item:"401K"}}%)</span>
-                        {% endif %}
-                    </div>
-                    <div class="flex flex-col">
-                        {% if total_type_prices|get_item:"percentage_change"|get_item:"401K" > 0 %}
-                        <div class="font-bold text-green-400">
-                            +{{total_type_prices|get_item:"percentage_change"|get_item:"401K"}}%
-                        </div>
-                        {% else %}
-                        <div class="font-bold text-red-400">
-                            -{{total_type_prices|get_item:"percentage_change"|get_item:"401K"}}%
-                        </div>
-                        {% endif %}
-    
-                        {% if total_type_prices|get_item:"change"|get_item:"401K" > 0 %}
-                        <div class="text-green-400">
-                            (+${{total_type_prices|get_item:"change"|get_item:"401K"|intcomma}})
-                        </div>
-                        {% else %}
-                        <div class="text-red-400">
-                            (-${{total_type_prices|get_item:"change"|get_item:"401K"|intcomma}})
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <ul role="list">
-                    {% for stock in retirement %}
-                    <li class=>
-                        <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
-                            <div class="flex flex-col sm:flex-row justify-between">
-                                <div class="flex flex-col">
-                                    <div>
-                                        <span class="font-bold text-white">{{stock.ticker}}</span>
-                                        {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
-                                        <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
-                                        {% else %}
-                                        <span class="text-red-400">(-{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="text-gray-400">
-                                        {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
-                                    </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
-                                    <div class="font-bold text-green-400">
-                                        +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
-                                    </div>
-                                    {% else %}
-                                    <div class="font-bold text-red-400">
-                                        -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
-                                    </div>
-                                    {% endif %}
-
-                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
-                                    <div class="text-green-400">
-                                        (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
-                                    </div>
-                                    {% else %}
-                                    <div class="text-red-400">
-                                        (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
-                                    </div>
-                                    {% endif %}
-                                </div>  
-    
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                {% include "./stocklist.html" with stocks=retirement type="401K" name="401K Positions"%}
             {% endif %}
 
             {% if roth %}
-            <div>
-                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
-                    <div>
-                        <span class="text-white font-bold underline">Roth IRA Positions</span>
-                        {% if total_type_prices|get_item:"daily_percentage_change"|get_item:"ROTH" > 0 %}
-                        <span class="text-green-400">(+{{total_type_prices|get_item:"daily_percentage_change"|get_item:"ROTH"}}%)</span>
-                        {% else %}
-                        <span class="text-red-400">(-{{total_type_prices|get_item:"daily_percentage_change"|get_item:"ROTH"}}%)</span>
-                        {% endif %}
-                    </div>
-                    <div class="flex flex-col">
-                        {% if total_type_prices|get_item:"percentage_change"|get_item:"ROTH" > 0 %}
-                        <div class="font-bold text-green-400">
-                            +{{total_type_prices|get_item:"percentage_change"|get_item:"ROTH"}}%
-                        </div>
-                        {% else %}
-                        <div class="font-bold text-red-400">
-                            -{{total_type_prices|get_item:"percentage_change"|get_item:"ROTH"}}%
-                        </div>
-                        {% endif %}
-    
-                        {% if total_type_prices|get_item:"change"|get_item:"ROTH" > 0 %}
-                        <div class="text-green-400">
-                            (+${{total_type_prices|get_item:"change"|get_item:"ROTH"|intcomma}})
-                        </div>
-                        {% else %}
-                        <div class="text-red-400">
-                            (-${{total_type_prices|get_item:"change"|get_item:"ROTH"|intcomma}})
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <ul role="list">
-                    {% for stock in roth %}
-                    <li class=>
-                        <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
-                            <div class="flex flex-col sm:flex-row justify-between">
-                                <div class="flex flex-col">
-                                    <div>
-                                        <span class="font-bold text-white">{{stock.ticker}}</span>
-                                        {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
-                                        <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
-                                        {% else %}
-                                        <span class="text-red-400">(-{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="text-gray-400">
-                                        {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
-                                    </div>
-                                </div>
-                                <div class="flex flex-col">
-                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
-                                    <div class="font-bold text-green-400">
-                                        +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
-                                    </div>
-                                    {% else %}
-                                    <div class="font-bold text-red-400">
-                                        -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
-                                    </div>
-                                    {% endif %}
-
-                                    {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
-                                    <div class="text-green-400">
-                                        (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
-                                    </div>
-                                    {% else %}
-                                    <div class="text-red-400">
-                                        (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
-                                    </div>
-                                    {% endif %}
-                                </div>  
-    
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                {% include "./stocklist.html" with stocks=roth type="ROTH" name="Roth IRA Positions"%}
             {% endif %}
         </div>
         <div>
@@ -324,7 +92,7 @@
                         {% csrf_token %}
                         <input class="hidden" id ="deleteTicker" name="deleteTicker" type="text">
                         <input class="hidden" id ="deleteType" name="deleteType" type="radio">
-                        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
+                        <button type="submit" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">Delete</button>
                       </form>
                 </div>
             </div>
@@ -344,8 +112,7 @@
 {% block scripts %}
 <script>
 
-    function onClick(ticker, quantity, cost, type, typeDisplay)
-    {
+    function onClick(ticker, quantity, cost, type, typeDisplay) {
         document.getElementById("selectedStock").classList.toggle("hidden");
 
         document.getElementById("ticker").readOnly = false;
@@ -372,8 +139,6 @@
     document.getElementById("mobile-menu-opened").classList.toggle("hidden");
   
     }
-
-
 </script>
 {% endblock %}
 

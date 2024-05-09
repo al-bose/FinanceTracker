@@ -13,6 +13,7 @@ from decimal import Decimal
 from django.urls import reverse
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 
 # Create your views here.
 
@@ -79,16 +80,8 @@ def main(request):
     for stock in stocks:
         data = getTickerData(stock.ticker)
 
-        most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
-        most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
-        most_recent_price = Decimal(most_recent_entry["4. close"])
-
-        days = list(data["Time Series (Daily)"].keys())
-        sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
-
-        second_most_recent_refresh = sorted_days[1]
-        second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
-        second_most_recent_price = Decimal(second_most_recent_entry["4. close"])
+        most_recent_price = Decimal(data["most_recent_price"])
+        second_most_recent_price = Decimal(data["second_most_recent_price"])
 
         current_value = most_recent_price * stock.quantity
         last_value = second_most_recent_price * stock.quantity
@@ -211,16 +204,8 @@ class PositionListView(LoginRequiredMixin, ListView):
         for stock in context["object_list"]:
             data = getTickerData(stock.ticker)
 
-            most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
-            most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
-            most_recent_price = Decimal(most_recent_entry["4. close"])
-
-            days = list(data["Time Series (Daily)"].keys())
-            sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
-
-            second_most_recent_refresh = sorted_days[1]
-            second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
-            second_most_recent_price = Decimal(second_most_recent_entry["4. close"])
+            most_recent_price = Decimal(data["most_recent_price"])
+            second_most_recent_price = Decimal(data["second_most_recent_price"])
 
             current_value = most_recent_price * stock.quantity
             last_value = second_most_recent_price * stock.quantity
@@ -260,35 +245,59 @@ def getTickerData(ticker):
     env = environ.Env()
     environ.Env.read_env()
 
-    #response = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey='+env("API_KEY"))
-    #data = response.json()
+    cache_key = f"ticker_{ticker}"
+    ticker_data = cache.get(key=cache_key)
+    if ticker_data is None:
+        response = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey='+env("API_KEY"))
+        data = response.json()
 
-    data = {
-        "Meta Data": {
-            "1. Information": "Daily Prices (open, high, low, close) and Volumes",
-            "2. Symbol": "TSLA",
-            "3. Last Refreshed": "2024-05-03",
-            "4. Output Size": "Compact",
-            "5. Time Zone": "US/Eastern"
-        },
-        "Time Series (Daily)": {
-            "2024-05-03": {
-            "1. open": "167.4000",
-            "2. high": "168.2200",
-            "3. low": "166.2250",
-            "4. close": "167.4300",
-            "5. volume": "5263342"
-            },
-            "2024-05-02": {
-            "1. open": "167.4000",
-            "2. high": "168.2200",
-            "3. low": "166.2250",
-            "4. close": "165.4300",
-            "5. volume": "5263342"
-            }
+        # data = {
+        #     "Meta Data": {
+        #         "1. Information": "Daily Prices (open, high, low, close) and Volumes",
+        #         "2. Symbol": "TSLA",
+        #         "3. Last Refreshed": "2024-05-03",
+        #         "4. Output Size": "Compact",
+        #         "5. Time Zone": "US/Eastern"
+        #     },
+        #     "Time Series (Daily)": {
+        #         "2024-05-03": {
+        #         "1. open": "167.4000",
+        #         "2. high": "168.2200",
+        #         "3. low": "166.2250",
+        #         "4. close": "167.4300",
+        #         "5. volume": "5263342"
+        #         },
+        #         "2024-05-02": {
+        #         "1. open": "167.4000",
+        #         "2. high": "168.2200",
+        #         "3. low": "166.2250",
+        #         "4. close": "165.4300",
+        #         "5. volume": "5263342"
+        #         }
+        #     }
+        # }
+
+        most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
+        most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
+        most_recent_price = most_recent_entry["4. close"]
+
+        days = list(data["Time Series (Daily)"].keys())
+        sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
+
+        second_most_recent_refresh = sorted_days[1]
+        second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
+        second_most_recent_price = second_most_recent_entry["4. close"]
+
+        ticker_data = {
+            "second_most_recent_price" : second_most_recent_price,
+            "most_recent_price": most_recent_price
         }
-    }
 
-    return data
+        cache.set(key=cache_key, value=ticker_data)
+    
+    return ticker_data
+
+    
+
 
 

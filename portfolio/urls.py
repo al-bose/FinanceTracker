@@ -6,6 +6,6 @@ app_name = "portfolio"
 urlpatterns = [
     path("", views.main, name="main"),
     path("create-position", views.createPosition, name="create-position"),
-    path("update-position", views.updatePosition, name="update-position"),
-    path("delete-position", views.deletePosition, name="delete-position")
+    path("update-position/<int:updateId>", views.updatePosition, name="update-position"),
+    path("delete-position/<int:deleteId>", views.deletePosition, name="delete-position")
 ]

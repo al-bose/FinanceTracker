@@ -17,9 +17,9 @@ from django.urls import reverse
 @login_required
 def main(request):
     stocks = Positions.objects.filter(user_id=request.user.id)
-    roth = []
-    individual = []
-    retirement = []
+    roth = stocks.filter(type=Positions.ROTH)
+    individual = stocks.filter(type=Positions.INDIVIDUAL)
+    retirement = stocks.filter(type=Positions.RETIREMENT)
 
     #calculate total current value for stock
     total_ticker_prices = {}
@@ -80,13 +80,6 @@ def main(request):
 
         #response = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey='+env("API_KEY"))
         #data = response.json()
-
-        if stock.type == Positions.RETIREMENT:
-            retirement.append(stock)
-        elif stock.type == Positions.INDIVIDUAL:
-            individual.append(stock)
-        elif stock.type == Positions.ROTH:
-            roth.append(stock)
 
         data = {
             "Meta Data": {
@@ -187,7 +180,6 @@ def main(request):
 @login_required
 def createPosition(request):
     if request.method == "POST":
-
         existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["ticker"]).filter(type = request.POST["type"])
 
         if existing_position_query:
@@ -211,24 +203,24 @@ def createPosition(request):
         return render(request, "portfolio/create_position.html", context)
     
 @login_required
-def updatePosition(request):
-    existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["ticker"]).filter(type = request.POST["type"])
-    print(request)
-    if existing_position_query:
-        existing_position = existing_position_query.first()
-        existing_position.cost_basis = Decimal(request.POST["costBasis"])
-        existing_position.quantity = Decimal(request.POST["quantity"])
-        existing_position.save()
+def updatePosition(request, updateId):
+    position = Positions.objects.filter(user_id = request.user.id).filter(id=updateId).get()
 
-    return HttpResponseRedirect(reverse("portfolio:main")) 
+    if request.method == "POST":
+        position.cost_basis = Decimal(request.POST["costBasis"])
+        position.quantity = Decimal(request.POST["quantity"])
+        position.save()
+        return HttpResponseRedirect(reverse("portfolio:main")) 
+    else:
+        context = {
+            "position": position
+        }
+        return render(request, "portfolio/update_position.html", context)
+
 
 @login_required
-def deletePosition(request):
-    existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["deleteTicker"]).filter(type = request.POST["deleteType"])
-    print(request)
-    if existing_position_query:
-        existing_position = existing_position_query.first()
-        existing_position.delete()
+def deletePosition(request, deleteId):
+    position = Positions.objects.filter(user_id = request.user.id).filter(id=deleteId).get()
+    position.delete()
     return HttpResponseRedirect(reverse("portfolio:main")) 
-
 

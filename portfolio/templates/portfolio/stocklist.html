@@ -36,11 +36,11 @@
     <ul role="list">
         {% for stock in stocks %}
         <li class=>
-            <div class="p-2 hover:border-2 border-white rounded-lg hover:cursor-pointer " id="{{stock.ticker}}_{{stock.type}}" onclick="onClick('{{stock.ticker}}', '{{stock.quantity}}', '{{stock.cost_basis}}', '{{stock.type}}', '{{stock.get_type_display}}')">
+            <div class="p-2 rounded-lg">
                 <div class="flex flex-col sm:flex-row justify-between">
                     <div class="flex flex-col">
                         <div>
-                            <span class="font-bold text-white">{{stock.ticker}}</span>
+                            <a class="font-bold text-white underline" href="{% url 'portfolio:update-position' stock.id%}">{{stock.ticker}}</a>
                             {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
                             <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
                             {% else %}

@@ -208,11 +208,10 @@ def createPosition(request):
             "api_key" : env("API_KEY"),
             "types" : Positions.TYPE_CHOICES
         }
-        return render(request, "portfolio/createposition.html", context)
+        return render(request, "portfolio/create_position.html", context)
     
 @login_required
 def updatePosition(request):
-
     existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["ticker"]).filter(type = request.POST["type"])
     print(request)
     if existing_position_query:
@@ -225,7 +224,7 @@ def updatePosition(request):
 
 @login_required
 def deletePosition(request):
-    existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["deleteTicker"]).filter(type = request.POST["type"])
+    existing_position_query = Positions.objects.filter(user_id = request.user.id).filter(ticker = request.POST["deleteTicker"]).filter(type = request.POST["deleteType"])
     print(request)
     if existing_position_query:
         existing_position = existing_position_query.first()

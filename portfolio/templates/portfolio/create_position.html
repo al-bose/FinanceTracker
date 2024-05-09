@@ -7,7 +7,7 @@
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form class="space-y-6" method="post" action="{% url 'portfolio:createposition' %}">
+      <form class="space-y-6" method="post" action="{% url 'portfolio:create-position' %}">
         {% csrf_token %}
         <div>
             <label for="ticker" class="block text-sm font-medium leading-6 text-white">Ticker</label>

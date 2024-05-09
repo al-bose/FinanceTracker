@@ -5,7 +5,7 @@
 
 <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
     <div>
-        <form method="get" action="{% url 'budget:createexpense' %}">
+        <form method="get" action="{% url 'budget:create-expense' %}">
             {% csrf_token %}
             <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">Add Expense</button>
         </form>
@@ -17,7 +17,7 @@
                     <li id="{{expense.id}}" class="p-2">
                         <div class="flex flex-col sm:flex-row justify-between">
                             <div class="flex flex-col">
-                                <a class="text-white font-bold underline" href="{% url 'budget:updateexpense' expense.id%}">{{expense.description}}</a>
+                                <a class="text-white font-bold underline" href="{% url 'budget:update-expense' expense.id%}">{{expense.description}}</a>
                                 <span class="text-gray-400 ">{{expense.date|date:"D d M, Y"}}</span>
                             </div>
                             <div class="flex flex-col sm:items-end">

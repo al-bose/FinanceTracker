@@ -54,7 +54,7 @@ def createExpense(request):
         context = {
             "types" : Expenses.TYPE_CHOICES
         }
-        return render(request, "budget/createexpense.html", context)
+        return render(request, "budget/create_expense.html", context)
 
 
 @login_required
@@ -72,15 +72,13 @@ def updateExpense(request, updateId):
             "types" : Expenses.TYPE_CHOICES,
             "expense" : expense
         }
-        return render(request, "budget/updateexpense.html", context)
+        return render(request, "budget/update_expense.html", context)
         
 
 @login_required
-def deleteExpense(request):
-    existing_expense_query = Expenses.objects.filter(id= request.POST['deleteExpense'])
-    if existing_expense_query:
-        existing_expense = existing_expense_query.first()
-        existing_expense.delete()
+def deleteExpense(request, deleteId):
+    expense = Expenses.objects.filter(user_id = request.user.id).filter(id=deleteId).get()
+    expense.delete()
     return HttpResponseRedirect(reverse("budget:expenses")) 
 
 @login_required

@@ -5,7 +5,7 @@ from . import views
 app_name = "portfolio"
 urlpatterns = [
     path("", views.main, name="main"),
-    path("createposition", views.createPosition, name="createposition"),
-    path("updateposition", views.updatePosition, name="updateposition"),
-    path("deleteposition", views.deletePosition, name="deleteposition")
+    path("create-position", views.createPosition, name="create-position"),
+    path("update-position", views.updatePosition, name="update-position"),
+    path("delete-position", views.deletePosition, name="delete-position")
 ]

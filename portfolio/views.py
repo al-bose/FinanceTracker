@@ -11,15 +11,19 @@ from timedelta import Timedelta
 import math
 from decimal import Decimal
 from django.urls import reverse
+from django.views.generic.list import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 @login_required
 def main(request):
     stocks = Positions.objects.filter(user_id=request.user.id)
-    roth = stocks.filter(type=Positions.ROTH)
-    individual = stocks.filter(type=Positions.INDIVIDUAL)
-    retirement = stocks.filter(type=Positions.RETIREMENT)
+
+    #only display top 3 stocks for each type on the main page
+    roth = stocks.filter(type=Positions.ROTH).order_by("-quantity")[:3]
+    individual = stocks.filter(type=Positions.INDIVIDUAL).order_by("-quantity")[:3]
+    retirement = stocks.filter(type=Positions.RETIREMENT).order_by("-quantity")[:3]
 
     #calculate total current value for stock
     total_ticker_prices = {}
@@ -73,39 +77,7 @@ def main(request):
     }
 
     for stock in stocks:
-        ticker = stock.ticker
-
-        env = environ.Env()
-        environ.Env.read_env()
-
-        #response = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey='+env("API_KEY"))
-        #data = response.json()
-
-        data = {
-            "Meta Data": {
-                "1. Information": "Daily Prices (open, high, low, close) and Volumes",
-                "2. Symbol": "TSLA",
-                "3. Last Refreshed": "2024-05-03",
-                "4. Output Size": "Compact",
-                "5. Time Zone": "US/Eastern"
-            },
-            "Time Series (Daily)": {
-                "2024-05-03": {
-                "1. open": "167.4000",
-                "2. high": "168.2200",
-                "3. low": "166.2250",
-                "4. close": "167.4300",
-                "5. volume": "5263342"
-                },
-                "2024-05-02": {
-                "1. open": "167.4000",
-                "2. high": "168.2200",
-                "3. low": "166.2250",
-                "4. close": "165.4300",
-                "5. volume": "5263342"
-                }
-            }
-        }
+        data = getTickerData(stock.ticker)
 
         most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
         most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
@@ -223,4 +195,140 @@ def deletePosition(request, deleteId):
     position = Positions.objects.filter(user_id = request.user.id).filter(id=deleteId).get()
     position.delete()
     return HttpResponseRedirect(reverse("portfolio:main")) 
+
+class PositionListView(LoginRequiredMixin, ListView):
+    model = Positions
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+
+        total_ticker_prices = {}
+
+        for stock in context["object_list"]:
+            data = getTickerData(stock.ticker)
+
+            most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
+            most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
+            most_recent_price = Decimal(most_recent_entry["4. close"])
+
+            days = list(data["Time Series (Daily)"].keys())
+            sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
+
+            second_most_recent_refresh = sorted_days[1]
+            second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
+            second_most_recent_price = Decimal(second_most_recent_entry["4. close"])
+
+            current_value = most_recent_price * stock.quantity
+            last_value = second_most_recent_price * stock.quantity
+            total_cost = stock.quantity * stock.cost_basis
+            percentage_change = (current_value - total_cost)/total_cost * 100
+            daily_percentage_change = (current_value - last_value)/last_value * 100
+
+            if stock.ticker in total_ticker_prices.keys():
+                total_ticker_prices[stock.ticker][stock.type] = {
+                    "current_value": round(current_value,2),
+                    "total_cost": round(total_cost,2),
+                    "change": round(current_value - total_cost, 2),
+                    "percentage_change": round(percentage_change, 2),
+                    "daily_change": round(current_value - last_value),
+                    "daily_percentage_change": round(daily_percentage_change, 2)
+                }
+            else:
+                total_ticker_prices[stock.ticker] = {
+                    stock.type : {
+                        "current_value": round(current_value,2),
+                        "total_cost": round(total_cost,2),
+                        "change": round(current_value - total_cost, 2),
+                        "percentage_change": round(percentage_change, 2),
+                        "daily_change": round(current_value - last_value),
+                        "daily_percentage_change": round(daily_percentage_change, 2)
+                    }
+                }
+
+        context["type"] = self.kwargs["type"]
+        context["total_ticker_prices"] = total_ticker_prices
+        return context
+    def get_queryset(self):
+       return Positions.objects.filter(user_id=self.request.user.id).filter(type=self.kwargs["type"]).order_by('-quantity')
+    
+
+def getTickerData(ticker):
+    env = environ.Env()
+    environ.Env.read_env()
+
+    #response = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol='+ticker+'&apikey='+env("API_KEY"))
+    #data = response.json()
+
+    data = {
+        "Meta Data": {
+            "1. Information": "Daily Prices (open, high, low, close) and Volumes",
+            "2. Symbol": "TSLA",
+            "3. Last Refreshed": "2024-05-03",
+            "4. Output Size": "Compact",
+            "5. Time Zone": "US/Eastern"
+        },
+        "Time Series (Daily)": {
+            "2024-05-03": {
+            "1. open": "167.4000",
+            "2. high": "168.2200",
+            "3. low": "166.2250",
+            "4. close": "167.4300",
+            "5. volume": "5263342"
+            },
+            "2024-05-02": {
+            "1. open": "167.4000",
+            "2. high": "168.2200",
+            "3. low": "166.2250",
+            "4. close": "165.4300",
+            "5. volume": "5263342"
+            }
+        }
+    }
+
+    return data
+
+def calculateTotalTickerPrices(stocks):
+    total_ticker_prices = {}
+
+    for stock in stocks:
+            data = getTickerData(stock.ticker)
+
+            most_recent_refresh = data["Meta Data"]["3. Last Refreshed"]
+            most_recent_entry = data["Time Series (Daily)"][most_recent_refresh]
+            most_recent_price = Decimal(most_recent_entry["4. close"])
+
+            days = list(data["Time Series (Daily)"].keys())
+            sorted_days = sorted(days, key=lambda x: datetime.datetime.strptime(x, '%Y-%M-%d'), reverse=True)
+
+            second_most_recent_refresh = sorted_days[1]
+            second_most_recent_entry = data["Time Series (Daily)"][second_most_recent_refresh]
+            second_most_recent_price = Decimal(second_most_recent_entry["4. close"])
+
+            current_value = most_recent_price * stock.quantity
+            last_value = second_most_recent_price * stock.quantity
+            total_cost = stock.quantity * stock.cost_basis
+            percentage_change = (current_value - total_cost)/total_cost * 100
+            daily_percentage_change = (current_value - last_value)/last_value * 100
+
+            if stock.ticker in total_ticker_prices.keys():
+                total_ticker_prices[stock.ticker][stock.type] = {
+                    "current_value": round(current_value,2),
+                    "total_cost": round(total_cost,2),
+                    "change": round(current_value - total_cost, 2),
+                    "percentage_change": round(percentage_change, 2),
+                    "daily_change": round(current_value - last_value),
+                    "daily_percentage_change": round(daily_percentage_change, 2)
+                }
+            else:
+                total_ticker_prices[stock.ticker] = {
+                    stock.type : {
+                        "current_value": round(current_value,2),
+                        "total_cost": round(total_cost,2),
+                        "change": round(current_value - total_cost, 2),
+                        "percentage_change": round(percentage_change, 2),
+                        "daily_change": round(current_value - last_value),
+                        "daily_percentage_change": round(daily_percentage_change, 2)
+                    }
+                }
 

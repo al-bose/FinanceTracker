@@ -40,7 +40,7 @@
                 <div class="flex flex-col sm:flex-row justify-between">
                     <div class="flex flex-col">
                         <div>
-                            <a class="font-bold text-white underline" href="{% url 'portfolio:update-position' stock.id%}">{{stock.ticker}}</a>
+                            <span class="font-bold text-white">{{stock.ticker}}</span>
                             {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
                             <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
                             {% else %}
@@ -72,10 +72,15 @@
                         </div>
                         {% endif %}
                     </div>  
-
                 </div>
             </div>
         </li>
         {% endfor %}
     </ul>
+    <div>
+        <form method="get" action="{% url 'portfolio:positions' type %}">
+            {% csrf_token %}
+            <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">View/Edit All {{name}}</button>
+        </form>
+    </div>
 </div>

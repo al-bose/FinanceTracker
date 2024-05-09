@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% load humanize %}
+{% block content %}
+
+<div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
+    <div>
+        <form method="get" action="{% url 'portfolio:create-position' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-white hover:bg-gray-700 bg-indigo-600 rounded-md p-2 font-medium">Add Position</button>
+        </form>
+    </div>
+
+    {% if page_obj %}
+        <ul role="list">
+            {% for stock in page_obj %}
+            <li class=>
+                <div class="p-2 rounded-lg">
+                    <div class="flex flex-col sm:flex-row justify-between">
+                        <div class="flex flex-col">
+                            <div>
+                                <a class="font-bold text-white underline" href="{% url 'portfolio:update-position' stock.id%}">{{stock.ticker}}</a>
+                                {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change" > 0 %}
+                                <span class="text-green-400">(+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
+                                {% else %}
+                                <span class="text-red-400">(-{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"daily_percentage_change"}}%)</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-gray-400">
+                                {{stock.quantity}} shares @ ${{stock.cost_basis}}/ea
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change" > 0 %}
+                            <div class="font-bold text-green-400">
+                                +{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                            </div>
+                            {% else %}
+                            <div class="font-bold text-red-400">
+                                -{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"percentage_change"}}%
+                            </div>
+                            {% endif %}
+
+                            {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
+                            <div class="text-green-400">
+                                (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
+                            </div>
+                            {% else %}
+                            <div class="text-red-400">
+                                (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
+                            </div>
+                            {% endif %}
+                        </div>  
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="flex flex-col items-center">
+            <!-- Help text -->
+            <span class="text-sm text-white">
+                Page <span class="font-semibold text-white">{{ page_obj.number }}</span> of <span class="font-semibold text-white">{{ page_obj.paginator.num_pages}}</span>
+            </span>
+            <div class="inline-flex mt-2 xs:mt-0">
+                <!-- Buttons -->
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="text-white underline rounded-md px-3 py-2 text-sm font-medium">Prev</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="text-white underline rounded-md px-3 py-2 text-sm font-medium">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="flex flex-col items-center mt-6">
+            <span class="text-sm text-gray-400 font-medium">No Positions Found...</span>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

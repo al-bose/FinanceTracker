@@ -26,4 +26,9 @@ This project is deployed using Supabase, Redis Cloud and Vercel (CI/CD).
 - https://redis.io/docs/latest/operate/rc/
 
 ## Running Locally:
-You should be able to clone and run this repository locally by using the requirements.txt file and the commands that can be found in the build script.
+You should be able to clone and run this repository locally by using the requirements.txt file and the commands that can be found in the build script. 
+
+When running locally you will also have to create a .env file and specify:
+DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT (can be a local PostgreSQL database)
+API_KEY (Alpha Vantage API key)
+REDIS_URL (can either be a local instance of redis or redis cloud)

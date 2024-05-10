@@ -157,6 +157,6 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": env("REDIS_URL"),
         "KEY_PREFIX": "ticker",
-        "TIMEOUT": 60 * 60 * 5
+        "TIMEOUT": 60 * 60 * 12
     }
 }

@@ -88,17 +88,17 @@
     window.addEventListener('DOMContentLoaded', (event) => {
         createChart();
     });
-</script>
-{% endblock %}
-
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js">
 
     function toggleMobileMenu() {
         document.getElementById("mobile-menu").classList.toggle("hidden");
         document.getElementById("mobile-menu-closed").classList.toggle("hidden");
         document.getElementById("mobile-menu-opened").classList.toggle("hidden");
     }
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
    
 </script>
 {% endblock %}

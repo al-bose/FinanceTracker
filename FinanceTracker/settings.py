@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'budget.apps.BudgetConfig',
     'portfolio.apps.PortfolioConfig',
-    'django.contrib.humanize'
+    'django.contrib.humanize',
+    'mathfilters'
 ]
 
 MIDDLEWARE = [

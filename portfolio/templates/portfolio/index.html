@@ -3,6 +3,7 @@
 {% load custom_filters %}
 {% load humanize %}
 {% block content %}
+{% load mathfilters %}
 
 <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
     <div>
@@ -32,27 +33,27 @@
                     <p class="mt-2 text-2xl font-bold text-white sm:text-3xl">Porfolio Value : ${{total_prices|get_item:"current_value"|intcomma}}</p>
                     
                     {% if total_prices|get_item:"change" > 0%}
-                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Overall Growth ($): {{total_prices|get_item:"change"|intcomma}}</p>
+                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Overall Growth: +${{total_prices|get_item:"change"|intcomma}}</p>
                     {% else %}
-                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Overall Growth ($): {{total_prices|get_item:"change"|intcomma}}</p>
+                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Overall Growth ($): -${{total_prices|get_item:"change"|abs|intcomma}}</p>
                     {% endif %}
                     
                     {% if total_prices|get_item:"percentage_change" > 0%}
-                        <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Overall Growth (%): {{total_prices|get_item:"percentage_change"}}%</p>
+                        <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Overall Growth: +{{total_prices|get_item:"percentage_change"}}%</p>
                     {% else %}
-                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Overall Growth (%): {{total_prices|get_item:"percentage_change"}}%</p>
+                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Overall Growth: {{total_prices|get_item:"percentage_change"}}%</p>
                     {% endif %}
 
                     {% if total_prices|get_item:"daily_change" > 0%}
-                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Daily Growth ($): {{total_prices|get_item:"daily_change"|intcomma}}</p>
+                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Daily Growth: +${{total_prices|get_item:"daily_change"|intcomma}}</p>
                     {% else %}
-                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Daily Growth ($): {{total_prices|get_item:"daily_change"|intcomma}}</p>
+                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Daily Growth: -${{total_prices|get_item:"daily_change"|abs|intcomma}}</p>
                     {% endif %}
 
                     {% if total_prices|get_item:"daily_percentage_change" > 0%}
-                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Daily Growth (%): {{total_prices|get_item:"daily_percentage_change"}}%</p>
+                    <p class="mt-2 text-2xl font-bold text-green-400 sm:text-3xl">Daily Growth: +{{total_prices|get_item:"daily_percentage_change"}}%</p>
                     {% else %}
-                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Daily Growth (%): {{total_prices|get_item:"daily_percentage_change"}}%</p>
+                    <p class="mt-2 text-2xl font-bold text-red-400 sm:text-3xl">Daily Growth: {{total_prices|get_item:"daily_percentage_change"}}%</p>
                     {% endif %}
                 </div>
             </div>

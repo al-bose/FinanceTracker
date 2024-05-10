@@ -2,6 +2,7 @@
 {% load custom_filters %}
 {% load humanize %}
 {% block content %}
+{% load mathfilters %}
 
 <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
     <div>
@@ -43,11 +44,11 @@
 
                             {% if total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change" > 0 %}
                             <div class="text-green-400">
-                                (+{{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
+                                (+${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
                             </div>
                             {% else %}
                             <div class="text-red-400">
-                                ({{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|intcomma}})
+                                (-${{total_ticker_prices|get_item:stock.ticker|get_item:stock.type|get_item:"change"|abs|intcomma}})
                             </div>
                             {% endif %}
                         </div>  

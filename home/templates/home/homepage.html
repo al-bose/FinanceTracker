@@ -4,33 +4,307 @@
   {% if user.is_authenticated %}
     <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56 px-6 pt-14 lg:px-8">
       <div class="text-center">
-        <h1 class="text-gray-300 text-4xl font-bold tracking-tight sm:text-6xl">Hello, </h1>
-        <p class="text-gray-300 mt-6 text-lg leading-8">{{user.get_short_name}}</p>
+        <h1 class="text-white text-4xl font-bold tracking-tight sm:text-6xl">Hello, </h1>
+        <p class="text-white mt-6 text-lg leading-8">{{user.get_short_name}}</p>
       </div>
     </div>
   {% else %}
   <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 mt-6">
     <div class="flex flex-col gap-10">
       <div class="text-center">
-        <h1 class="text-gray-300 text-4xl font-bold tracking-tight sm:text-6xl justify-between">Manage Your Finances</h1>
-        <p class="text-gray-300 mt-6 text-lg leading-8">Personalized apps for tracking expenditure, budgeting and portfolio health.</p>
-       
+        <h1 class="text-white text-4xl font-bold tracking-tight sm:text-6xl justify-between">Manage Your Finances</h1>
+        <p class="text-white mt-6 text-lg leading-8">Personalized apps for tracking expenditure, budgeting and portfolio health.</p>
       </div>
-    <div class="text-center">
-      <form method="get" action="{% url 'home:login' %}">
-        {% csrf_token %}
-        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-1.5 px-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get Started</button>
-      </form>
-    </div>
-      <div class="flex flex-col sm:flex-row gap-10 items-center">
-        <div>
-          <img class="ring-2 ring-indigo-600 shadow-lg shadow-indigo-500/50" src="{% static 'portfolio_sc_final.png' %}" alt="Your Company">
+
+      <div class="text-center">
+        <form method="get" action="{% url 'home:login' %}">
+          {% csrf_token %}
+          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-1.5 px-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get Started</button>
+        </form>
+      </div>
+      <div>
+
+      <div class="mx-auto grid max-w-2xl grid-cols-1 mt-6 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:grid-cols-2 lg:max-w-full overflow-hidden items-center">
+        <div class="lg:pr-8 lg:pt-4">
+          <div class="lg:max-w-lg">
+            <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Budget</p>
+            <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-300">
+              <div class="relative pl-9">
+                <dt class="inline font-bold text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-1 top-1 h-5 w-5 text-white">
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+                  </svg>
+                  Management
+                </dt>
+                <dd class="inline">Add, update, edit and delete future or past expenses to keep track of how you spend your money.</dd>
+              </div>
+              <div class="relative pl-9">
+                <dt class="inline font-bold text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-1 top-1 h-5 w-5 text-white">
+                    <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                  </svg>            
+                  Breakdown 
+                </dt>
+                <dd class="inline">View monthly expenses broken down by type: utilities, food, housing, transportation, and more...</dd>
+              </div>
+            </dl>
+            <div class="mt-6">
+              <form method="get" action="{% url 'home:login' %}">
+                {% csrf_token %}
+                <button type="submit" class="rounded-md bg-indigo-600 px-3 py-1.5 px-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get Started</button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div>
-          <img class="ring-2 ring-indigo-600 shadow-lg shadow-indigo-500/50" src="{% static 'budget_sc_final.png' %}" alt="Your Company">
+        <div class="w-[48rem] max-w-full lg:max-w-full sm:w-[57rem] md:-ml-4 lg:-ml-0" width="2432" height="1442" >
+          <canvas id="myChart"></canvas>
+          <p class="mt-2 font-bold text-white sm:text-xl text-center mb-10">Total Spent This Month : $1,589.00</p>
+        </div>
+      </div>
+
+        <div class="mx-auto grid max-w-2xl grid-cols-1 mt-6 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:grid-cols-2 overflow-hidden lg:max-w-full items-center">
+          <div class="lg:pr-8 lg:pt-4">
+            <div class="lg:max-w-lg">
+              <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Portfolio</p>
+              <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-300">
+                <div class="relative pl-9">
+                  <dt class="inline font-bold text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-1 top-1 h-5 w-5 text-white">
+                      <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+                    </svg>
+                    Management
+                  </dt>
+                  <dd class="inline">Add, update, edit and delete portfolio positions in your 401K and Roth IRA, alongside individual stock holdings.</dd>
+                </div>
+                <div class="relative pl-9">
+                  <dt class="inline font-bold text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="absolute left-1 top-1 h-5 w-5 text-white">
+                      <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                      <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd" />
+                    </svg>                    
+                    Value and Growth
+                  </dt>
+                  <dd class="inline">View real-time value, overall growth and daily movement for individual positions and your overall portfolio.</dd>
+                </div>
+              </dl>
+              <div class="mt-6">
+                <form method="get" action="{% url 'home:login' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="rounded-md bg-indigo-600 px-3 py-1.5 px-1.5 text-sm font-semibold leading-6 text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get Started</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="w-[48rem] max-w-full lg:max-w-full sm:w-[57rem] md:-ml-4 lg:-ml-0 mt-6" width="2432" height="1442">
+            <div class="flex flex-col sm:flex-row gap-10 justify-stretch">
+              <div  class="flex flex-col gap-10 flex-grow">
+                <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
+                  <div>
+                      <span class="text-white font-bold underline">Individual Positions</span>
+                      <span class="text-green-400">(+3.65%)</span>
+                  </div>
+                  <div class="flex flex-col sm:items-end">
+                      <div class="font-bold text-green-400">
+                          +19.69%
+                      </div>
+                      <div class="text-green-400">
+                          (+$4,215.10)
+                      </div>
+                  </div>
+              </div>
+              <ul role="list">
+                  <li class=>
+                      <div class="p-2 rounded-lg">
+                          <div class="flex flex-col sm:flex-row justify-between">
+                              <div class="flex flex-col">
+                                  <div>
+                                      <span class="font-bold text-white">FXAIX</span>
+                                      <span class="text-green-400">(+3.76%)</span>
+                                  </div>
+                                  <div class="text-gray-400">
+                                      125.787 shares @ $149.03/ea
+                                  </div>
+                              </div>
+                              <div class="flex flex-col sm:items-end">
+                                  <div class="font-bold text-green-400">
+                                      +21.80%
+                                  </div>
+                                  <div class="text-green-400">
+                                      (+$4,086.82)
+                                  </div>
+                              </div>  
+                          </div>
+                      </div>
+                  </li>
+                  <li class=>
+                    <div class="p-2 rounded-lg">
+                        <div class="flex flex-col sm:flex-row justify-between">
+                            <div class="flex flex-col">
+                                <div>
+                                    <span class="font-bold text-white">MARA</span>
+                                    <span class="text-green-400">(+7.47%)</span>
+                                </div>
+                                <div class="text-gray-400">
+                                    12.000 shares @ $21.84/ea
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:items-end">
+                                <div class="font-bold text-red-400">
+                                    -20.97%
+                                </div>
+                                <div class="text-red-400">
+                                    (-$54.96)
+                                </div>
+                            </div>  
+                        </div>
+                    </div>
+                </li>
+                <li class=>
+                  <div class="p-2 rounded-lg">
+                      <div class="flex flex-col sm:flex-row justify-between">
+                          <div class="flex flex-col">
+                              <div>
+                                  <span class="font-bold text-white">PLTR</span>
+                                  <span class="text-red-400">(-4.69%)</span>
+                              </div>
+                              <div class="text-gray-400">
+                                  12.000 shares @ $12.22/ea
+                              </div>
+                          </div>
+                          <div class="flex flex-col sm:items-end">
+                              <div class="font-bold text-green-400">
+                                  +71.36%
+                              </div>
+                              <div class="text-green-400">
+                                  (+$104.64)
+                              </div>
+                          </div>  
+                      </div>
+                  </div>
+              </li>
+              </ul>
+              <div class = "flex flex-col sm:flex-row py-5 justify-between p-2">
+                <div>
+                    <span class="text-white font-bold underline">401K Positions</span>
+                    <span class="text-green-400">(+3.76%)</span>
+                </div>
+                <div class="flex flex-col sm:items-end">
+                    <div class="font-bold text-green-400">
+                        +20.61%
+                    </div>
+                    <div class="text-green-400">
+                        (+$7,940.22)
+                    </div>
+                </div>
+            </div>
+            <ul role="list">
+              <li class=>
+                  <div class="p-2 rounded-lg">
+                      <div class="flex flex-col sm:flex-row justify-between">
+                          <div class="flex flex-col">
+                              <div>
+                                  <span class="font-bold text-white">FXAIX</span>
+                                  <span class="text-green-400">(+3.76%)</span>
+                              </div>
+                              <div class="text-gray-400">
+                                  255.971 shares @ $150.50/ea
+                              </div>
+                          </div>
+                          <div class="flex flex-col sm:items-end">
+                              <div class="font-bold text-green-400">
+                                  +20.61%
+                              </div>
+                              <div class="text-green-400">
+                                  (+$7,940.22)
+                              </div>
+                          </div>  
+                      </div>
+                  </div>
+              </li>
+          </ul>
+              </div>
+            </div>
+            
+          </div>
         </div>
       </div>
     </div>
   </div>
   {% endif %}
+
+
+<script>
+  function drawPieGraph(data, id)
+  {   
+      var labels = data.Labels; 
+      var chartLabel = data.chartLabel; 
+      var chartdata = data.chartdata; 
+
+      var ctx = document.getElementById(id).getContext('2d'); 
+      var chart = new Chart(ctx, { 
+          type: 'pie', 
+          data: { 
+              labels: labels, 
+              datasets: [{ 
+              label: chartLabel, 
+              backgroundColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
+              borderColor: ['rgb(253, 127, 111)', 'rgb(126, 176, 213)', 'rgb(178, 224, 97)', 'rgb(189, 126, 190)', 'rgb(255, 181, 90)', 'rgb(255, 238, 101)', 'rgb(190, 185, 219)'], 
+              data: chartdata, 
+              }] 
+          },
+          options: {
+              plugins: {
+                  title: {
+                      display : true,
+                      text : "Spending This Month",
+                      color: "rgb(255,255,255)",
+                      font: {
+                          size: 20
+                      }
+
+                  },
+                  legend: {
+                      position: 'bottom',
+                      align: 'center',
+                      labels: {
+                          color: "rgb(255, 255, 255)",
+                          usePointStyle : true
+                      }
+
+                  }
+              }
+          }
+      }); 
+  }
+
+  function createChart()
+  {
+    var data = {
+      Labels: ["Utilities", "Food", "housing", "Transportation", "Clothing", "Entertainment", "Miscellaneous"],
+      chartLabel: "Total Spent This Month", 
+      chartdata: [165, 175, 1000, 44, 105, 75, 25]
+    }
+
+    drawPieGraph(data, "myChart")
+  }
+
+  window.addEventListener('DOMContentLoaded', (event) => {
+      createChart();
+  });
+
+  function toggleMobileMenu() {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+      document.getElementById("mobile-menu-closed").classList.toggle("hidden");
+      document.getElementById("mobile-menu-opened").classList.toggle("hidden");
+  }
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+ 
+</script>
 {% endblock %}
